@@ -3,7 +3,7 @@ Form.addEventListener('submit', function (e) {
     e.preventDefault();
 const usuario = document.getElementById('usuario').value;
     const clave = document.getElementById('clave').value;
-  fetch('https://backend-login-mfsm.onrender.com/login', {
+  fetch('https://backend-login-01tj.onrender.com/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
 
