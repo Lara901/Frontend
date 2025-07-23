@@ -50,7 +50,7 @@
   <tbody></tbody>
 </table>
 
-<script src="facturas.js"></script>
+
    <script>
   fetch('https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a')
     .then(res => res.json())
@@ -75,13 +75,13 @@
 
       data.forEach(fila => {
         if (fila.Fecha && fila.Concepto) {
-          const tr = document.createElement('tr');
-          const credito = limpiarNumero(fila["Créditos limpios"]);
-          const debito = limpiarNumero(fila["Débitos limpios"]);
+          const credito = limpiarNumero(fila["Créditos"]);
+          const debito = limpiarNumero(fila["Débitos"]);
 
           totalCreditos += credito;
           totalDebitos += debito;
 
+          const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${fila.Fecha}</td>
             <td>${fila.Status || ''}</td>
@@ -95,7 +95,6 @@
         }
       });
 
-      // Agregar fila de totales
       const trTotal = document.createElement('tr');
       trTotal.innerHTML = `
         <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL:</td>
