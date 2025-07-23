@@ -25,11 +25,10 @@ const usuario = document.getElementById('usuario').value;
     .then(res => res.json())
     .then(data => {
       const lista = document.getElementById('Facturas');
-      data.forEach(usuario => {
+      data.forEach(fila => {
         const item = document.createElement('li');
         item.textContent = `${fila.Fecha} (${fila.status} - SubConcepto: ${fila["Sub Concepto"]} - Concepto: ${fila.Concepto} - Detalle: ${fila.Detalle} - Créditos: ${fila.Créditos} - Débitos ${fila.Débitos})`;
         lista.appendChild(item);
       });
     });
-
 }); 
