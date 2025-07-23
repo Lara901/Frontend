@@ -66,9 +66,9 @@
           <td>${fila["Sub Concepto"] || ''}</td>
           <td>${fila.Concepto}</td>
           <td>${fila.Detalle || ''}</td>
-          <td>${parseFloat(fila.Créditos) || 0}</td>
-          <td>${parseFloat(fila.Débitos) || 0}</td>
-        `;
+         <td>${formatoMoneda.format(fila.Créditos || 0)}</td>
+      <td>${formatoMoneda.format(fila.Débitos || 0)}</td>
+      `;
         cuerpoTabla.appendChild(tr);
       }
     });
