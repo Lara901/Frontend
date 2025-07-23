@@ -83,8 +83,8 @@ const limpiarNumero = (texto) => {
           <td>${fila["Sub Concepto"] || ''}</td>
           <td>${fila.Concepto}</td>
           <td>${fila.Detalle || ''}</td>
-          <td style="text-align: right;">${formatoMoneda.format(fila["Créditos limpios"]|| 0)}</td>
-          <td style="text-align: right;">${formatoMoneda.format(fila["Débitos limpios"]|| 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(credito|| 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(debito|| 0)}</td>
       </tr>`;
       cuerpoTabla.appendChild(tr);
        
