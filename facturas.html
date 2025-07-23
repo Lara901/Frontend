@@ -35,18 +35,47 @@
     </header>
     
     <h2>Tabla de Facturas</h2>
-   <ul id="Facturas"></ul>
+<table id="tablaFacturas" border="1">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Status</th>
+      <th>Sub Concepto</th>
+      <th>Concepto</th>
+      <th>Detalle</th>
+      <th>Créditos</th>
+      <th>Débitos</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script src="facturas.js"></script>
    <script>
     fetch('https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a')
-    .then(res => res.json())
-    .then(data => {
-      const lista = document.getElementById('Facturas');
-      data.forEach(fila => {
-        const item = document.createElement('li');
-        item.textContent = `${fila.Fecha} (${fila.status} - SubConcepto: ${fila["Sub Concepto"]} - Concepto: ${fila.Concepto} - Detalle: ${fila.Detalle} - Créditos: ${fila.Créditos} - Débitos ${fila.Débitos})`;
-        lista.appendChild(item);
-      });
+  .then(res => res.json())
+  .then(data => {
+    const cuerpoTabla = document.querySelector('#tablaFacturas tbody');
+
+    data.forEach(fila => {
+      if (fila.Fecha && fila.Concepto) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${fila.Fecha}</td>
+          <td>${fila.status || ''}</td>
+          <td>${fila["Sub Concepto"] || ''}</td>
+          <td>${fila.Concepto}</td>
+          <td>${fila.Detalle || ''}</td>
+          <td>${fila.Créditos || ''}</td>
+          <td>${fila.Débitos || ''}</td>
+        `;
+        cuerpoTabla.appendChild(tr);
+      }
     });
+  })
+  .catch(err => {
+    console.error('Error al cargar las facturas:', err);
+  });
    </script>
 <script src="main.js"></script>
 </body>
