@@ -50,63 +50,58 @@
   <tbody></tbody>
 </table>
 
-
+<script src="facturas.js"></script>
    <script>
-  fetch('https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a')
-    .then(res => res.json())
-    .then(data => {
-      const cuerpoTabla = document.querySelector('#tablaFacturas tbody');
+    
+    fetch('https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a')
+  .then(res => res.json())
+  .then(data => {
+    const cuerpoTabla = document.querySelector('#tablaFacturas tbody');
 
-      const formatoMoneda = new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0
-      });
+    const formatoMoneda = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  minimumFractionDigits: 0
+  
+});
+const limpiarNumero = (texto) => {
+  if (!texto || texto.trim() === '') return 0;
+  const limpio = texto.replace(/\./g, '').replace(',', '.');
+  const numero = parseFloat(limpio);
+  return isNaN(numero) ? 0 : numero;
+};
 
-      const limpiarNumero = (texto) => {
-        if (!texto || texto.trim() === '') return 0;
-        const limpio = texto.replace(/\./g, '').replace(',', '.');
-        const numero = parseFloat(limpio);
-        return isNaN(numero) ? 0 : numero;
-      };
+    data.forEach(fila => {
+      if (fila.Fecha && fila.Concepto) {
+        const tr = document.createElement('tr');
+        const credito = limpiarNumero(fila["Créditos limpios"]);
+        const debito = limpiarNumero(fila["Débitos limpios"]);
 
-      let totalCreditos = 0;
-      let totalDebitos = 0;
-
-      data.forEach(fila => {
-        if (fila.Fecha && fila.Concepto) {
-          const credito = limpiarNumero(fila["Créditos"]);
-          const debito = limpiarNumero(fila["Débitos"]);
-
-          totalCreditos += credito;
-          totalDebitos += debito;
-
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${fila.Fecha}</td>
-            <td>${fila.Status || ''}</td>
-            <td>${fila["Sub Concepto"] || ''}</td>
-            <td>${fila.Concepto}</td>
-            <td>${fila.Detalle || ''}</td>
-            <td style="text-align: right;">${formatoMoneda.format(credito)}</td>
-            <td style="text-align: right;">${formatoMoneda.format(debito)}</td>
-          `;
-          cuerpoTabla.appendChild(tr);
-        }
-      });
-
-      const trTotal = document.createElement('tr');
-      trTotal.innerHTML = `
-        <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL:</td>
-        <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalCreditos)}</td>
-        <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalDebitos)}</td>
-      `;
-      cuerpoTabla.appendChild(trTotal);
-    })
-    .catch(err => {
-      console.error('Error al cargar las facturas:', err);
+        tr.innerHTML = `
+          <td>${fila.Fecha}</td>
+          <td>${fila.Status || ''}</td>
+          <td>${fila["Sub Concepto"] || ''}</td>
+          <td>${fila.Concepto}</td>
+          <td>${fila.Detalle || ''}</td>
+          <td style="text-align: right;">${formatoMoneda.format(fila["Créditos limpios"]|| 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(fila["Débitos limpios"]|| 0)}</td>
+      </tr>`;
+      cuerpoTabla.appendChild(tr);
+       
+      }
     });
-</script>
+    const trTotal = document.createElement('tr');
+        trTotal.innerHTML = `
+          <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL:</td>
+          <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalCreditos)}</td>
+          <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalDebitos)}</td>
+        `;
+        cuerpoTabla.appendChild(trTotal);
+  })
+  .catch(err => {
+    console.error('Error al cargar las facturas:', err);
+  });
+   </script>
 <script src="main.js"></script>
 </body>
 </html>
