@@ -67,21 +67,33 @@
 const limpiarNumero = (texto) => {
   if (!texto) return 0;
   return parseFloat(texto.replace(/\./g, '').replace(',', '.'));
+
+  let totalCreditos = 0;
+  let totalDebitos = 0;
 };
     data.forEach(fila => {
       if (fila.Fecha && fila.Concepto) {
         const tr = document.createElement('tr');
         const credito = limpiarNumero(fila.Créditos);
         const debito = limpiarNumero(fila.Débitos);
+         totalCreditos += credito;
+        totalDebitos += debito;
+
         tr.innerHTML = `
           <td>${fila.Fecha}</td>
           <td>${fila.Status || ''}</td>
           <td>${fila["Sub Concepto"] || ''}</td>
           <td>${fila.Concepto}</td>
           <td>${fila.Detalle || ''}</td>
-          <td>${formatoMoneda.format(credito||0)}</td>
-          <td>${formatoMoneda.format(debito||0)}</td>
-      </tr>`;
+          <td style="text-align: right;">${formatoMoneda.format(credito || 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(debito || 0)}</td>
+      `;
+      const trTotal = document.createElement('tr');
+        trTotal.innerHTML = `
+          <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL:</td>
+          <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalCreditos)}</td>
+          <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalDebitos)}</td>
+        `;
         cuerpoTabla.appendChild(tr);
       }
     });
