@@ -70,16 +70,12 @@ const limpiarNumero = (texto) => {
   const numero = parseFloat(limpio);
   return isNaN(numero) ? 0 : numero;
 };
-let totalCreditos = 0;
-  let totalDebitos = 0;
 
     data.forEach(fila => {
       if (fila.Fecha && fila.Concepto) {
         const tr = document.createElement('tr');
         const credito = limpiarNumero(fila.Créditos);
         const debito = limpiarNumero(fila.Débitos);
-         totalCreditos += credito;
-        totalDebitos += debito;
 
         tr.innerHTML = `
           <td>${fila.Fecha}</td>
@@ -87,8 +83,8 @@ let totalCreditos = 0;
           <td>${fila["Sub Concepto"] || ''}</td>
           <td>${fila.Concepto}</td>
           <td>${fila.Detalle || ''}</td>
-          <td style="text-align: right;">${formatoMoneda.format(credito || 0)}</td>
-          <td style="text-align: right;">${formatoMoneda.format(debito || 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(fila.Créditos|| 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(fila.Débitos|| 0)}</td>
       </tr>`;
       cuerpoTabla.appendChild(tr);
        
