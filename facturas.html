@@ -74,8 +74,8 @@ const limpiarNumero = (texto) => {
     data.forEach(fila => {
       if (fila.Fecha && fila.Concepto) {
         const tr = document.createElement('tr');
-        const credito = limpiarNumero(fila.Créditos);
-        const debito = limpiarNumero(fila.Débitos);
+        const credito = limpiarNumero(fila["Créditos limpios"]);
+        const debito = limpiarNumero(fila["Débitos limpios"]);
 
         tr.innerHTML = `
           <td>${fila.Fecha}</td>
@@ -83,8 +83,8 @@ const limpiarNumero = (texto) => {
           <td>${fila["Sub Concepto"] || ''}</td>
           <td>${fila.Concepto}</td>
           <td>${fila.Detalle || ''}</td>
-          <td style="text-align: right;">${formatoMoneda.format(fila.Créditos|| 0)}</td>
-          <td style="text-align: right;">${formatoMoneda.format(fila.Débitos|| 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(fila["Créditos limpios"]|| 0)}</td>
+          <td style="text-align: right;">${formatoMoneda.format(fila["Débitos limpios"]|| 0)}</td>
       </tr>`;
       cuerpoTabla.appendChild(tr);
        
