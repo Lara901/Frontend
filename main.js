@@ -21,14 +21,5 @@ const usuario = document.getElementById('usuario').value;
         console.error(err);
 });
 
-  fetch('https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a')
-    .then(res => res.json())
-    .then(data => {
-      const lista = document.getElementById('Facturas');
-      data.forEach(fila => {
-        const item = document.createElement('li');
-        item.textContent = `${fila.Fecha} (${fila.status} - SubConcepto: ${fila["Sub Concepto"]} - Concepto: ${fila.Concepto} - Detalle: ${fila.Detalle} - Créditos: ${fila.Créditos} - Débitos ${fila.Débitos})`;
-        lista.appendChild(item);
-      });
-    });
+  
 }); 
