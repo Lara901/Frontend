@@ -87,16 +87,18 @@ const limpiarNumero = (texto) => {
           <td>${fila.Detalle || ''}</td>
           <td style="text-align: right;">${formatoMoneda.format(credito || 0)}</td>
           <td style="text-align: right;">${formatoMoneda.format(debito || 0)}</td>
-      `;
-      const trTotal = document.createElement('tr');
+      </tr>`;
+      cuerpoTabla.appendChild(tr);
+       
+      }
+    });
+    const trTotal = document.createElement('tr');
         trTotal.innerHTML = `
           <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL:</td>
           <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalCreditos)}</td>
           <td style="text-align: right; font-weight: bold;">${formatoMoneda.format(totalDebitos)}</td>
         `;
-        cuerpoTabla.appendChild(tr);
-      }
-    });
+        cuerpoTabla.appendChild(trTotal);
   })
   .catch(err => {
     console.error('Error al cargar las facturas:', err);
