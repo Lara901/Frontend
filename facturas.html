@@ -65,14 +65,14 @@
   
 });
 const limpiarNumero = (texto) => {
-  if (!texto) return 0;
-  return parseFloat(texto.replace(/\./g, '').replace(',', '.'));
-
-  
+  if (!texto || texto.trim() === '') return 0;
+  const limpio = texto.replace(/\./g, '').replace(',', '.');
+  const numero = parseFloat(limpio);
+  return isNaN(numero) ? 0 : numero;
 };
 let totalCreditos = 0;
   let totalDebitos = 0;
-  
+
     data.forEach(fila => {
       if (fila.Fecha && fila.Concepto) {
         const tr = document.createElement('tr');
