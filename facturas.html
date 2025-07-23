@@ -62,12 +62,12 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${fila.Fecha}</td>
-          <td>${fila.status || ''}</td>
+          <td>${fila.Status || ''}</td>
           <td>${fila["Sub Concepto"] || ''}</td>
           <td>${fila.Concepto}</td>
           <td>${fila.Detalle || ''}</td>
-          <td>${fila.Créditos || ''}</td>
-          <td>${fila.Débitos || ''}</td>
+          <td>${parseFloat(fila.Créditos) || 0}</td>
+          <td>${parseFloat(fila.Débitos) || 0}</td>
         `;
         cuerpoTabla.appendChild(tr);
       }
