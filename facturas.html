@@ -62,19 +62,26 @@
   style: 'currency',
   currency: 'COP',
   minimumFractionDigits: 0
+  
 });
+const limpiarNumero = (texto) => {
+  if (!texto) return 0;
+  return parseFloat(texto.replace(/\./g, '').replace(',', '.'));
+};
     data.forEach(fila => {
       if (fila.Fecha && fila.Concepto) {
         const tr = document.createElement('tr');
+        const credito = limpiarNumero(fila.Créditos);
+        const debito = limpiarNumero(fila.Débitos);
         tr.innerHTML = `
           <td>${fila.Fecha}</td>
           <td>${fila.Status || ''}</td>
           <td>${fila["Sub Concepto"] || ''}</td>
           <td>${fila.Concepto}</td>
           <td>${fila.Detalle || ''}</td>
-          <td>${formatoMoneda.format(fila.Créditos||0)}</td>
-          <td>${formatoMoneda.format(fila.Débitos||0)}</td>
-      `;
+          <td>${formatoMoneda.format(credito||0)}</td>
+          <td>${formatoMoneda.format(debito||0)}</td>
+      </tr>`;
         cuerpoTabla.appendChild(tr);
       }
     });
