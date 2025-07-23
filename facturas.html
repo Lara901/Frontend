@@ -68,9 +68,11 @@ const limpiarNumero = (texto) => {
   if (!texto) return 0;
   return parseFloat(texto.replace(/\./g, '').replace(',', '.'));
 
-  let totalCreditos = 0;
-  let totalDebitos = 0;
+  
 };
+let totalCreditos = 0;
+  let totalDebitos = 0;
+  
     data.forEach(fila => {
       if (fila.Fecha && fila.Concepto) {
         const tr = document.createElement('tr');
