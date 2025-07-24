@@ -27,9 +27,20 @@
         <section class="Contenido">
         <h2>Ingreso/Actualizacion de Datos</h2>
         <p>Por el siguiente formulario se podra actualizar la informacion de la base de datos del hogar</p>
+        <h3>Formulario dinámico</h3>
+  <label for="tabla">Selecciona la tabla:</label>
+  <select id="tabla">
+    <option value="">-- Selecciona --</option>
+    <option value="BD">BD</option>
+    <option value="Control_Pacientes">Control Pacientes</option>
+    <option value="Gastos_por_mes">Gastos</option>
+  </select>
+  <form id="formulario"></form>
+  <div id="mensaje"></div>
     </section>
     </header> 
 
 <script src="main.js"></script>
+<script src="agregar.js"></script>
 </body>
 </html>
