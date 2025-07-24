@@ -22,4 +22,3 @@ const usuario = document.getElementById('usuario').value;
 });
   
 }); 
-let tablaActual = '';

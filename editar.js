@@ -1,8 +1,9 @@
+let tablaActual = '';
 const base = 'https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a/tabs/';
 const campos = {
-  "BD": ["ID", "Año", "Mes", "Fecha", "Status", "Concepto", "Sub Concepto", "Detalle", "Créditos", "Débitos"],
-  "Control_Pacientes": ["paciente", "edad", "diagnóstico"],
-  "Gastos_por_mes": ["mes", "categoria", "monto"]
+  "BD": ["ID", "Año", "Mes", "Fecha", "Status", "Concepto", "Sub Concepto", "Detalle", "Créditos limpios",  "Débitos limpios"],
+  "Control_Pacientes": ["ID", "paciente", "edad", "diagnóstico"],
+  "Gastos_por_mes": ["ID", "mes", "categoria", "monto"]
 };
 
 const tSel = document.getElementById("tabla");
@@ -14,15 +15,17 @@ function formatearCOP(valor) {
   return Number(valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
 }
 
+const columnasOcultas = ['Créditos', 'Débitos'];
+
 tSel.addEventListener("change", () => {
   document.getElementById("busquedaID").style.display = "block";
-  const t = tSel.value;
-  tablaActual = t;
-  cargarDatos(t);
+  tablaActual = tSel.value;
+  cargarDatos(tablaActual);
   form.innerHTML = "";
   msg.textContent = "";
-  if (!t) return;
-  campos[t].slice(1).forEach(c => {
+  if (!tablaActual) return;
+
+  campos[tablaActual].slice(1).forEach(c => {
     form.insertAdjacentHTML('beforeend',
       `<label>${c}</label><input name="${c}" required><br>`);
   });
@@ -37,49 +40,43 @@ async function obtenerNuevoID(tabla) {
     return Math.max(...ids, 0) + 1;
   } catch (err) {
     console.error("Error obteniendo IDs:", err);
-    return 1; 
+    return 1;
   }
 }
-
-const columnasOcultas = ['Créditos', 'Débitos'];
 
 async function cargarDatos(tabla) {
   const res = await fetch(`${base}${encodeURIComponent(tabla)}`);
   const datos = await res.json();
   const columnas = campos[tabla];
   const contenedor = document.getElementById('datos');
-  const encabezado = document.getElementById("encabezado"); 
+  const encabezado = document.getElementById("encabezado");
 
   encabezado.innerHTML = `
-  <tr>
-    ${columnas.filter(c => !columnasOcultas.includes(c)).map(c => `<th>${c}</th>`).join('')}
-    <th>Acciones</th>
-  </tr>
-`;
+    <tr>
+      ${columnas.map(c => `<th>${c}</th>`).join('')}
+      <th>Acciones</th>
+    </tr>`;
 
   contenedor.innerHTML = "";
 
   datos.forEach((fila) => {
-    const celdas = columnas
-      .filter(k => !columnasOcultas.includes(k))
-      .map(k => {
-        let valor = fila[k] || '';
-        if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
-          valor = formatearCOP(valor);
-        }
-        return `<td contenteditable="${k !== 'ID'}">${valor}</td>`;
-      }).join('');
+    const celdas = columnas.map(k => {
+      let valor = fila[k] || '';
+      if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
+        valor = formatearCOP(valor);
+      }
+      const editable = k === 'ID' ? 'false' : 'true';
+      return `<td contenteditable="${editable}">${valor}</td>`;
+    }).join('');
 
-       const filaHTML = `
+    contenedor.insertAdjacentHTML("beforeend", `
       <tr data-id="${fila.ID}">
         ${celdas}
         <td>
           <button onclick="editarFila(this, '${tabla}')">💾</button>
           <button onclick="eliminarFila(this, '${tabla}')">🗑️</button>
         </td>
-      </tr>
-    `;
-    contenedor.insertAdjacentHTML("beforeend", filaHTML);
+      </tr>`);
   });
 }
 
@@ -87,12 +84,10 @@ async function editarFila(boton, tabla) {
   const fila = boton.closest('tr');
   const celdas = fila.querySelectorAll('td');
   const columnas = campos[tabla];
-  const valores = Array.from(celdas).slice(0, columnas.length).map(td => td.innerText);
 
+  const valores = Array.from(celdas).slice(0, columnas.length).map(td => td.innerText.trim());
   const data = {};
-  columnas.forEach((col, i) => {
-    data[col] = valores[i];
-  });
+  columnas.forEach((col, i) => data[col] = valores[i]);
 
   const id = fila.dataset.id;
   const query = { "ID": id };
@@ -130,34 +125,34 @@ async function eliminarFila(boton, tabla) {
 
 async function buscarPorID() {
   const id = document.getElementById("buscarID").value.trim();
-  if (!id) return;
+  if (!id || !tablaActual) return;
 
   const res = await fetch(`${base}${encodeURIComponent(tablaActual)}`);
   const datos = await res.json();
+  const columnas = campos[tablaActual];
   const contenedor = document.getElementById('datos');
   const encabezado = document.getElementById('encabezado');
-  const columnas = campos[tablaActual];
 
   const resultado = datos.find(f => f.ID?.toString() === id);
   if (!resultado) {
-    contenedor.innerHTML = `<tr><td colspan="100%">No se encontró el ID ${id}</td></tr>`;
+    contenedor.innerHTML = `<tr><td colspan="100%">❌ No se encontró el ID ${id}</td></tr>`;
     return;
   }
 
+  encabezado.innerHTML = `
+    <tr>
+      ${columnas.map(c => `<th>${c}</th>`).join('')}
+      <th>Acciones</th>
+    </tr>`;
 
-  encabezado.innerHTML = "<tr>" + columnas
-    .filter(c => !columnasOcultas.includes(c))
-    .map(c => `<th>${c}</th>`).join('') + "<th>Acciones</th></tr>";
-
-  const celdas = columnas
-    .filter(k => !columnasOcultas.includes(k))
-    .map(k => {
-      let valor = resultado[k] || '';
-      if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
-        valor = formatearCOP(valor);
-      }
-      return `<td contenteditable="${k !== 'ID'}">${valor}</td>`;
-    }).join('');
+  const celdas = columnas.map(k => {
+    let valor = resultado[k] || '';
+    if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
+      valor = formatearCOP(valor);
+    }
+    const editable = k === 'ID' ? 'false' : 'true';
+    return `<td contenteditable="${editable}">${valor}</td>`;
+  }).join('');
 
   contenedor.innerHTML = `
     <tr data-id="${resultado.ID}">
@@ -166,10 +161,9 @@ async function buscarPorID() {
         <button onclick="editarFila(this, '${tablaActual}')">💾</button>
         <button onclick="eliminarFila(this, '${tablaActual}')">🗑️</button>
       </td>
-    </tr>
-  `;
+    </tr>`;
 }
-let tablaActual = '';
+
 document.getElementById("buscarID").addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
     e.preventDefault();
