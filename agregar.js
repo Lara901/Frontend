@@ -1,6 +1,6 @@
 const base = 'https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a/tabs/';
 const campos = {
-  "BD": ["Año", "Mes", "Fecha", "Status", "Concepto", "Sub Concepto", "Detalle", "Créditos", "Débitos"],
+  "BD": ["ID", "Año", "Mes", "Fecha", "Status", "Concepto", "Sub Concepto", "Detalle", "Créditos", "Débitos"],
   "Control_Pacientes": ["paciente", "edad", "diagnóstico"],
   "Gastos_por mes": ["mes", "categoria", "monto"]
 };
