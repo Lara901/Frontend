@@ -6,7 +6,33 @@ const campos = {
 };
 
 const tSel = document.getElementById("tabla");
-const tablaDatos = document.getElementById("tabla"); // selector tabla
+const form = document.getElementById("formulario");
+const msg = document.getElementById("mensaje");
+
+tSel.addEventListener("change", () => {
+  form.innerHTML = "";
+  msg.textContent = "";
+  const t = tSel.value;
+  if (!t) return;
+  campos[t].slice(1).forEach(c => {
+    form.insertAdjacentHTML('beforeend',
+      `<label>${c}</label><input name="${c}" required><br>`);
+  });
+  form.insertAdjacentHTML('beforeend', `<button type="submit">Enviar</button>`);
+});
+async function obtenerNuevoID(tabla) {
+  try {
+    const res = await fetch(base + encodeURIComponent(tabla));
+    const data = await res.json();
+    const ids = data.map(row => parseInt(row.ID)).filter(n => !isNaN(n));
+    return Math.max(...ids, 0) + 1;
+  } catch (err) {
+    console.error("Error obteniendo IDs:", err);
+    return 1; 
+  }
+}
+
+const tablaDatos = document.getElementById("tabla");
 const contenedorTabla = document.createElement("table");
 contenedorTabla.innerHTML = "<thead><tr><th colspan='100%'>Registros</th></tr></thead><tbody id='datos'></tbody>";
 document.body.appendChild(contenedorTabla);
@@ -23,9 +49,10 @@ async function cargarDatos(tabla) {
   const contenedor = document.getElementById('datos');
   contenedor.innerHTML = "";
 
-  const columnas = campos[tabla]; // columnas a mostrar
+ 
 
   datos.forEach((fila) => {
+     const columnas = campos[tabla]; 
     const celdas = columnas.map(k =>
       `<td contenteditable="${k !== 'ID'}">${fila[k] || ''}</td>`
     ).join('');

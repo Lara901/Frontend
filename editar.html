@@ -28,15 +28,20 @@
   <section class="Contenido">
     <h2>Editar Contenido</h2>
     <p>En esta opción se podrá editar o eliminar datos ya creados</p>
-
-    <label for="tabla">Selecciona una tabla:</label>
-    <select id="tabla" name="tabla">
-      <option value="">-- Selecciona tabla --</option>
-      <option value="BD">BD</option>
-      <option value="Control_Pacientes">Control_Pacientes</option>
-      <option value="Gastos_por mes">Gastos_por mes</option>
-    </select>
-
+<h3>Formulario dinámico</h3>
+  <label for="tabla">Selecciona la tabla:</label>
+  <select id="tabla">
+    <option value="">-- Selecciona --</option>
+    <option value="BD">BD</option>
+    <option value="Control_Pacientes">Control Pacientes</option>
+    <option value="Gastos_por_mes">Gastos</option>
+  </select>
+  <form id="formulario"></form>
+  <h3>Registros existentes</h3>
+<div id="datos-contenedor"></div>
+  <div id="mensaje"></div>
+    </section>
+    
     <table border="1">
       <thead>
         <tr><th colspan="100%">Registros</th></tr>
