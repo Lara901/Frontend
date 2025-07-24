@@ -36,19 +36,25 @@
     <option value="Control_Pacientes">Control Pacientes</option>
     <option value="Gastos_por_mes">Gastos</option>
   </select>
+  <div id="busquedaID" style="display:none; margin: 10px 0;">
+  <label for="buscarID">Buscar por ID: </label>
+  <input type="text" id="buscarID" placeholder="Ej: 123" />
+  <button onclick="buscarPorID()">Buscar</button>
+  <button onclick="document.getElementById('buscarID').value=''; cargarDatos(tablaActual)">Mostrar todo</button>
+  
+</div>
   <form id="formulario"></form>
   <h3>Registros existentes</h3>
 <div id="datos-contenedor"></div>
   <div id="mensaje"></div>
     </section>
-    
+
     <table border="1">
-      <thead>
-        <tr><th colspan="100%">Registros</th></tr>
-      </thead>
-      <tbody id="datos"></tbody>
-    </table>
-  </section>
+  <thead id="encabezado">
+    <tr><th colspan="100%">Registros</th></tr>
+  </thead>
+  <tbody id="datos"></tbody>
+</table>
 
   <script src="main.js"></script>
   <script src="agregar.js"></script>

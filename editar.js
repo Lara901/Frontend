@@ -2,14 +2,22 @@ const base = 'https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f608
 const campos = {
   "BD": ["ID", "Año", "Mes", "Fecha", "Status", "Concepto", "Sub Concepto", "Detalle", "Créditos", "Débitos"],
   "Control_Pacientes": ["paciente", "edad", "diagnóstico"],
-  "Gastos_por mes": ["mes", "categoria", "monto"]
+  "Gastos_por_mes": ["mes", "categoria", "monto"]
 };
 
 const tSel = document.getElementById("tabla");
 const form = document.getElementById("formulario");
 const msg = document.getElementById("mensaje");
 
+function formatearCOP(valor) {
+  if (!valor || isNaN(valor)) return '';
+  return Number(valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+}
+
 tSel.addEventListener("change", () => {
+    tablaActual = tablaSelect.value;
+document.getElementById("busquedaID").style.display = "block";
+cargarDatos(tablaActual);
   form.innerHTML = "";
   msg.textContent = "";
   const t = tSel.value;
@@ -33,9 +41,6 @@ async function obtenerNuevoID(tabla) {
 }
 
 const tablaDatos = document.getElementById("tabla");
-const contenedorTabla = document.createElement("table");
-contenedorTabla.innerHTML = "<thead><tr><th colspan='100%'>Registros</th></tr></thead><tbody id='datos'></tbody>";
-document.body.appendChild(contenedorTabla);
 
 tablaDatos.addEventListener("change", () => {
   if (tablaDatos.value) {
@@ -43,19 +48,31 @@ tablaDatos.addEventListener("change", () => {
   }
 });
 
+const columnasOcultas = ['Créditos', 'Débitos'];
+
 async function cargarDatos(tabla) {
   const res = await fetch(`${base}${encodeURIComponent(tabla)}`);
   const datos = await res.json();
+  const columnas = campos[tabla];
   const contenedor = document.getElementById('datos');
-  contenedor.innerHTML = "";
-
- 
+  contenedor.innerHTML = `
+    <tr>
+      ${columnas.filter(c => !columnasOcultas.includes(c)).map(c => `<th>${c}</th>`).join('')}
+      <th>Acciones</th>
+    </tr>
+  `;
 
   datos.forEach((fila) => {
-     const columnas = campos[tabla]; 
-    const celdas = columnas.map(k =>
-      `<td contenteditable="${k !== 'ID'}">${fila[k] || ''}</td>`
-    ).join('');
+    const celdas = columnas
+      .filter(k => !columnasOcultas.includes(k))
+      .map(k => {
+        let valor = fila[k] || '';
+        if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios'].includes(k)) {
+          valor = formatearCOP(valor);
+        }
+        return `<td contenteditable="${k !== 'ID'}">${valor}</td>`;
+      }).join('');
+
     contenedor.insertAdjacentHTML("beforeend", `
       <tr data-id="${fila.ID}">
         ${celdas}
@@ -112,3 +129,46 @@ async function eliminarFila(boton, tabla) {
     alert("❌ Error al eliminar");
   }
 }
+
+async function buscarPorID() {
+  const id = document.getElementById("buscarID").value.trim();
+  if (!id) return;
+
+  const res = await fetch(`${base}${encodeURIComponent(tablaActual)}`);
+  const datos = await res.json();
+  const contenedor = document.getElementById('datos');
+  const encabezado = document.getElementById('encabezado');
+  const columnas = campos[tablaActual];
+
+  const resultado = datos.find(f => f.ID?.toString() === id);
+  if (!resultado) {
+    contenedor.innerHTML = `<tr><td colspan="100%">No se encontró el ID ${id}</td></tr>`;
+    return;
+  }
+
+
+  encabezado.innerHTML = "<tr>" + columnas
+    .filter(c => !columnasOcultas.includes(c))
+    .map(c => `<th>${c}</th>`).join('') + "<th>Acciones</th></tr>";
+
+  const celdas = columnas
+    .filter(k => !columnasOcultas.includes(k))
+    .map(k => {
+      let valor = resultado[k] || '';
+      if (['Valor', 'Débitos', 'Créditos', 'Total', 'Subtotal'].includes(k)) {
+        valor = formatearCOP(valor);
+      }
+      return `<td contenteditable="${k !== 'ID'}">${valor}</td>`;
+    }).join('');
+
+  contenedor.innerHTML = `
+    <tr data-id="${resultado.ID}">
+      ${celdas}
+      <td>
+        <button onclick="editarFila(this, '${tablaActual}')">💾</button>
+        <button onclick="eliminarFila(this, '${tablaActual}')">🗑️</button>
+      </td>
+    </tr>
+  `;
+}
+let tablaActual = '';

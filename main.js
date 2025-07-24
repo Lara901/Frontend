@@ -20,6 +20,6 @@ const usuario = document.getElementById('usuario').value;
     document.getElementById('mensaje').innerText = '⚠️ Error en el servidor';
         console.error(err);
 });
-
   
 }); 
+let tablaActual = '';
