@@ -15,12 +15,12 @@ function formatearCOP(valor) {
 }
 
 tSel.addEventListener("change", () => {
-    tablaActual = tablaSelect.value;
-document.getElementById("busquedaID").style.display = "block";
-cargarDatos(tablaActual);
+  document.getElementById("busquedaID").style.display = "block";
+  const t = tSel.value;
+  tablaActual = t;
+  cargarDatos(t);
   form.innerHTML = "";
   msg.textContent = "";
-  const t = tSel.value;
   if (!t) return;
   campos[t].slice(1).forEach(c => {
     form.insertAdjacentHTML('beforeend',
@@ -28,6 +28,7 @@ cargarDatos(tablaActual);
   });
   form.insertAdjacentHTML('beforeend', `<button type="submit">Enviar</button>`);
 });
+
 async function obtenerNuevoID(tabla) {
   try {
     const res = await fetch(base + encodeURIComponent(tabla));
@@ -40,14 +41,6 @@ async function obtenerNuevoID(tabla) {
   }
 }
 
-const tablaDatos = document.getElementById("tabla");
-
-tablaDatos.addEventListener("change", () => {
-  if (tablaDatos.value) {
-    cargarDatos(tablaDatos.value);
-  }
-});
-
 const columnasOcultas = ['Créditos', 'Débitos'];
 
 async function cargarDatos(tabla) {
@@ -55,25 +48,29 @@ async function cargarDatos(tabla) {
   const datos = await res.json();
   const columnas = campos[tabla];
   const contenedor = document.getElementById('datos');
-  contenedor.innerHTML = `
-    <tr>
-      ${columnas.filter(c => !columnasOcultas.includes(c)).map(c => `<th>${c}</th>`).join('')}
-      <th>Acciones</th>
-    </tr>
-  `;
+  const encabezado = document.getElementById("encabezado"); 
+
+  encabezado.innerHTML = `
+  <tr>
+    ${columnas.filter(c => !columnasOcultas.includes(c)).map(c => `<th>${c}</th>`).join('')}
+    <th>Acciones</th>
+  </tr>
+`;
+
+  contenedor.innerHTML = "";
 
   datos.forEach((fila) => {
     const celdas = columnas
       .filter(k => !columnasOcultas.includes(k))
       .map(k => {
         let valor = fila[k] || '';
-        if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios'].includes(k)) {
+        if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
           valor = formatearCOP(valor);
         }
         return `<td contenteditable="${k !== 'ID'}">${valor}</td>`;
       }).join('');
 
-    contenedor.insertAdjacentHTML("beforeend", `
+       const filaHTML = `
       <tr data-id="${fila.ID}">
         ${celdas}
         <td>
@@ -81,7 +78,8 @@ async function cargarDatos(tabla) {
           <button onclick="eliminarFila(this, '${tabla}')">🗑️</button>
         </td>
       </tr>
-    `);
+    `;
+    contenedor.insertAdjacentHTML("beforeend", filaHTML);
   });
 }
 
@@ -155,7 +153,7 @@ async function buscarPorID() {
     .filter(k => !columnasOcultas.includes(k))
     .map(k => {
       let valor = resultado[k] || '';
-      if (['Valor', 'Débitos', 'Créditos', 'Total', 'Subtotal'].includes(k)) {
+      if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
         valor = formatearCOP(valor);
       }
       return `<td contenteditable="${k !== 'ID'}">${valor}</td>`;
@@ -172,3 +170,9 @@ async function buscarPorID() {
   `;
 }
 let tablaActual = '';
+document.getElementById("buscarID").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    buscarPorID();
+  }
+});
