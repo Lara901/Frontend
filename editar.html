@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Editar/Eliminar</title>
+  <script>
+    if (localStorage.getItem('usuarioAutenticado') !== 'true') {
+      window.location.href = 'login.html';
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1 id="tituloPrincipal">Nómina Hogar El Bosque</h1>
+    <nav>
+      <a class="nav-item" href="index.html">Inicio</a>
+      <a class="nav-item" href="facturas.html">Facturas</a>
+      <a class="nav-item" href="Control.html">Pacientes</a>
+      <a class="nav-item" href="Flujo.html">Caja</a>
+      <a class="nav-item" href="Gastos.html">Gastos</a>
+      <a class="nav-item" href="excel.html">Búsqueda</a>
+      <a class="nav-item" href="editar.html">Editar/Eliminar</a>
+    </nav>
+  </header>
+
+  <section class="Contenido">
+    <h2>Editar Contenido</h2>
+    <p>En esta opción se podrá editar o eliminar datos ya creados</p>
+
+    <label for="tabla">Selecciona una tabla:</label>
+    <select id="tabla" name="tabla">
+      <option value="">-- Selecciona tabla --</option>
+      <option value="BD">BD</option>
+      <option value="Control_Pacientes">Control_Pacientes</option>
+      <option value="Gastos_por mes">Gastos_por mes</option>
+    </select>
+
+    <table border="1">
+      <thead>
+        <tr><th colspan="100%">Registros</th></tr>
+      </thead>
+      <tbody id="datos"></tbody>
+    </table>
+  </section>
+
+  <script src="main.js"></script>
+  <script src="editar.js"></script>
+</body>
+</html>
