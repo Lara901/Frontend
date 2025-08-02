@@ -1,7 +1,7 @@
 let tablaActual = '';
-const base = 'https://api.sheetbest.com/sheets/422f9b4b-ad48-42a8-8a8f-97826f60823a/tabs/';
+const base = 'https://backend-login-01tj.onrender.com/';
 const campos = {
-  "BD": ["ID", "Año", "Mes", "Fecha", "Status", "Concepto", "Sub Concepto", "Detalle", "Créditos limpios",  "Débitos limpios"],
+  "BD": ["ID", "Año", "Mes", "Fecha", "Status", "Concepto", "Sub Concepto", "Detalle", "Créditos limpios", "Débitos limpios"],
   "Control_Pacientes": ["ID", "paciente", "edad", "diagnóstico"],
   "Gastos_por_mes": ["ID", "mes", "categoria", "monto"]
 };
@@ -28,15 +28,14 @@ tSel.addEventListener("change", () => {
   if (!tablaActual) return;
 
   campos[tablaActual].slice(1).forEach(c => {
-    form.insertAdjacentHTML('beforeend',
-      `<label>${c}</label><input name="${c}" required><br>`);
+    form.insertAdjacentHTML('beforeend', `<label>${c}</label><input name="${c}" required><br>`);
   });
   form.insertAdjacentHTML('beforeend', `<button type="submit">Enviar</button>`);
 });
 
 async function obtenerNuevoID(tabla) {
   try {
-    const res = await fetch(base + encodeURIComponent(tabla));
+    const res = await fetch(base + tabla);
     const data = await res.json();
     const ids = data.map(row => parseInt(row.ID)).filter(n => !isNaN(n));
     return Math.max(...ids, 0) + 1;
@@ -47,40 +46,65 @@ async function obtenerNuevoID(tabla) {
 }
 
 async function cargarDatos(tabla) {
-  const res = await fetch(`${base}${encodeURIComponent(tabla)}`);
-  const datos = await res.json();
-  const columnas = campos[tabla];
-  const contenedor = document.getElementById('datos');
-  const encabezado = document.getElementById("encabezado");
+  try {
+    const res = await fetch(`${base}${tabla}`);
+    const datos = await res.json();
+    const columnas = campos[tabla];
+    const contenedor = document.getElementById('datos');
+    const encabezado = document.getElementById("encabezado");
 
-  encabezado.innerHTML = `
-    <tr>
-      ${columnas.map(c => `<th>${c}</th>`).join('')}
-      <th>Acciones</th>
-    </tr>`;
+    encabezado.innerHTML = `<tr>${columnas.map(c => `<th>${c}</th>`).join('')}<th>Acciones</th></tr>`;
+    contenedor.innerHTML = "";
 
-  contenedor.innerHTML = "";
+    datos.forEach((fila) => {
+      const celdas = columnas.map(k => {
+        let valor = fila[k] || '';
+        if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
+          valor = formatearCOP(valor);
+        }
+        const editable = k === 'ID' ? 'false' : 'true';
+        return `<td contenteditable="${editable}">${valor}</td>`;
+      }).join('');
 
-  datos.forEach((fila) => {
-    const celdas = columnas.map(k => {
-      let valor = fila[k] || '';
-      if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(k)) {
-        valor = formatearCOP(valor);
-      }
-      const editable = k === 'ID' ? 'false' : 'true';
-      return `<td contenteditable="${editable}">${valor}</td>`;
-    }).join('');
-
-    contenedor.insertAdjacentHTML("beforeend", `
-      <tr data-id="${fila.ID}">
-        ${celdas}
-        <td>
-          <button onclick="editarFila(this, '${tabla}')">💾</button>
-          <button onclick="eliminarFila(this, '${tabla}')">🗑️</button>
-        </td>
-      </tr>`);
-  });
+      contenedor.insertAdjacentHTML("beforeend", `
+        <tr data-id="${fila.ID}">
+          ${celdas}
+          <td>
+            <button onclick="editarFila(this, '${tabla}')">💾</button>
+            <button onclick="eliminarFila(this, '${tabla}')">🗑️</button>
+          </td>
+        </tr>`);
+    });
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+  }
 }
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const data = {};
+  const tabla = tablaActual;
+  const nuevoID = await obtenerNuevoID(tabla);
+  data["ID"] = nuevoID;
+
+  campos[tabla].slice(1).forEach(c => {
+    data[c] = form.elements[c].value;
+  });
+
+  try {
+    await fetch(`${base}${tabla}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    msg.textContent = '✅ Agregado correctamente';
+    form.reset();
+    cargarDatos(tabla);
+  } catch (err) {
+    console.error(err);
+    msg.textContent = '❌ Error al enviar';
+  }
+});
 
 async function editarFila(boton, tabla) {
   const fila = boton.closest('tr');
@@ -99,19 +123,16 @@ async function editarFila(boton, tabla) {
   });
 
   const id = fila.dataset.id;
-  const query = { "ID": id };
 
   try {
-    console.log("Editando fila:", { query, data });
-    const res = await fetch(`${base}${encodeURIComponent(tabla)}`, {
+    const res = await fetch(`${base}${tabla}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, data })
+      body: JSON.stringify({ ID: id, data })
     });
-
-    const resultText = await res.text();
-    console.log("Respuesta Sheet.best:", resultText);
-    alert("✅ Registro actualizado correctamente");
+    const text = await res.text();
+    console.log("Editado:", text);
+    alert("✅ Registro actualizado");
   } catch (err) {
     console.error(err);
     alert("❌ Error al actualizar");
@@ -123,10 +144,10 @@ async function eliminarFila(boton, tabla) {
   const id = fila.dataset.id;
 
   try {
-    await fetch(`${base}${encodeURIComponent(tabla)}`, {
+    await fetch(`${base}${tabla}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ "ID": id })
+      body: JSON.stringify({ ID: id })
     });
     fila.remove();
     alert("🗑️ Registro eliminado correctamente");
@@ -140,7 +161,7 @@ async function buscarPorID() {
   const id = document.getElementById("buscarID").value.trim();
   if (!id || !tablaActual) return;
 
-  const res = await fetch(`${base}${encodeURIComponent(tablaActual)}`);
+  const res = await fetch(`${base}${tablaActual}`);
   const datos = await res.json();
   const columnas = campos[tablaActual];
   const contenedor = document.getElementById('datos');
@@ -152,11 +173,7 @@ async function buscarPorID() {
     return;
   }
 
-  encabezado.innerHTML = `
-    <tr>
-      ${columnas.map(c => `<th>${c}</th>`).join('')}
-      <th>Acciones</th>
-    </tr>`;
+  encabezado.innerHTML = `<tr>${columnas.map(c => `<th>${c}</th>`).join('')}<th>Acciones</th></tr>`;
 
   const celdas = columnas.map(k => {
     let valor = resultado[k] || '';
