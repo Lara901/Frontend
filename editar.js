@@ -15,7 +15,9 @@ function formatearCOP(valor) {
   return Number(valor).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
 }
 
-const columnasOcultas = ['Créditos', 'Débitos'];
+function limpiarValor(valor) {
+  return valor.replace(/\$/g, '').replace(/\./g, '').replace(/,/g, '.').trim();
+}
 
 tSel.addEventListener("change", () => {
   document.getElementById("busquedaID").style.display = "block";
@@ -87,17 +89,28 @@ async function editarFila(boton, tabla) {
 
   const valores = Array.from(celdas).slice(0, columnas.length).map(td => td.innerText.trim());
   const data = {};
-  columnas.forEach((col, i) => data[col] = valores[i]);
+
+  columnas.forEach((col, i) => {
+    let val = valores[i];
+    if (['Débitos', 'Créditos', 'Débitos limpios', 'Créditos limpios', 'monto'].includes(col)) {
+      val = limpiarValor(val);
+    }
+    data[col] = val;
+  });
 
   const id = fila.dataset.id;
   const query = { "ID": id };
 
   try {
-    await fetch(`${base}${encodeURIComponent(tabla)}`, {
+    console.log("Editando fila:", { query, data });
+    const res = await fetch(`${base}${encodeURIComponent(tabla)}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, data })
     });
+
+    const resultText = await res.text();
+    console.log("Respuesta Sheet.best:", resultText);
     alert("✅ Registro actualizado correctamente");
   } catch (err) {
     console.error(err);
