@@ -9,17 +9,48 @@
 <body>
      <h1>Iniciar sesión</h1>
   <form id="loginForm">
-    <label for="usuario">Usuario:</label>
-    <input type="text" id="usuario" name="usuario" placeholder="Usuario" required><br><br>
+  <input type="text" id="usuario" placeholder="Usuario" required />
+  <input type="password" id="clave" placeholder="Contraseña" required />
+  <button type="submit">Iniciar sesión</button>
+  <p id="mensaje"></p>
+</form>
 
-    <label for="clave">Contraseña:</label>
-    <input type="password" id="clave"  name="clave" placeholder="clave" required><br><br>
+<script>
+  const form = document.getElementById('loginForm');
 
-    <button type="submit">Ingresar</button>
-  </form>
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-   <p id="mensaje" style="color: red;"></p>
+    const usuario = document.getElementById('usuario').value.trim();
+    const clave = document.getElementById('clave').value.trim();
 
-<script src="main.js"></script>
+    fetch('https://backend-login-01tj.onrender.com/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ usuario, clave })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Error de red o del servidor');
+        return res.json();
+      })
+      .then(data => {
+        if (data.success === true) {
+          // Guardar estado de sesión
+          localStorage.setItem('usuarioAutenticado', 'true');
+          localStorage.setItem('usuario', data.usuario.usuario); // Puedes guardar más datos si necesitas
+
+          window.location.href = 'index.html'; // Página protegida
+        } else {
+          document.getElementById('mensaje').innerText = '❌ Acceso denegado';
+        }
+      })
+      .catch(err => {
+        document.getElementById('mensaje').innerText = '⚠️ Error en el servidor';
+        console.error(err);
+      });
+  });
+</script>
 </body>
 </html> 
