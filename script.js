@@ -204,6 +204,39 @@ async function buscarPorIDEditar() {
   }
 }
 
+async function editarDato() {
+  if (!hojaActualEditar || !idActualEditar) {
+    document.getElementById("respuestaEditar").textContent = "Primero busca un ID para editar.";
+    return;
+  }
+
+  const formulario = document.getElementById("formularioDatos");
+  const datosEditados = {};
+
+  for (const elemento of formulario.elements) {
+    if (elemento.name) {
+      datosEditados[elemento.name] = elemento.value;
+    }
+  }
+
+  try {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hojaActualEditar)}/${idActualEditar}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datosEditados),
+    });
+
+    if (res.ok) {
+      document.getElementById("respuestaEditar").textContent = "Datos editados correctamente.";
+    } else {
+      document.getElementById("respuestaEditar").textContent = "Error al editar los datos.";
+    }
+  } catch (error) {
+    console.error("Error en la edición:", error);
+    document.getElementById("respuestaEditar").textContent = "Error de red o servidor.";
+  }
+}
+
 // ------------------ ELIMINAR ------------------
 
 async function buscarPorIDEliminar() {
