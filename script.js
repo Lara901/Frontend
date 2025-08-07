@@ -85,7 +85,7 @@ async function mostrarDatos(hoja, contenedorId) {
   valor = Number(valor).toLocaleString("es-CO", {
     style: "currency",
     currency: "COP",
-    minimumFractionDigits: 0
+    minimumFractionDigits: 1
   });
 }
     celda.textContent = valor;
