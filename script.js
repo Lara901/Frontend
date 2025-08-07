@@ -1,5 +1,12 @@
 const backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto por tu URL real
-
+const columnasConFormatoPesos = [
+  "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
+  "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+  "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "INGRESOS", "GASTOS", "DIFERENCIA",
+  "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
+  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"
+];
 
 // ------------------ LOGIN ------------------
 
@@ -106,6 +113,11 @@ async function mostrarDatos(hoja, contenedorId) {
   });
 
   contenedor.appendChild(tabla);
+}
+
+function verDatos() {
+  const hoja = document.getElementById("hojaSelect").value;
+  mostrarDatos(hoja, "tablaDatos");
 }
 
 // ------------------ BUSCAR POR ID ------------------
