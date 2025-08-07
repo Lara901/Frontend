@@ -15,7 +15,7 @@ async function login() {
   const contraseña = document.getElementById('contrasena').value;
 
   try {
-    const res = await fetch(`${backendUrl}/login`, {
+    const res = await fetch(`${backendURL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ usuario, contraseña })
