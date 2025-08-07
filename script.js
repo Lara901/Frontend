@@ -1,4 +1,4 @@
-onst backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto por tu URL real
+const backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto por tu URL real
 
 // ------------------ LOGIN ------------------
 
