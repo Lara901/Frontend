@@ -181,57 +181,28 @@ async function buscarPorIDEditar() {
   const hoja = document.getElementById("hojaEditar").value;
   const id = document.getElementById("idEditar").value.trim();
 
-  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
-  const datos = await res.json();
-  const encontrado = datos.find(item => item.ID == id);
-
-  if (encontrado) {
-    datoEditando = encontrado;
-    hojaActualEditar = hoja;
-    idActualEditar = id;
-    generarFormularioEditar(encontrado);
-    document.getElementById("respuestaEditar").textContent = "";
-  } else {
-    datoEditando = null;
-    hojaActualEditar = null;
-    document.getElementById("formularioEditar").innerHTML = "";
-    document.getElementById("respuestaEditar").textContent = "ID no encontrado.";
-  }
-}
-
-async function editarDato() {
-  if (!datoEditando || !hojaActualEditar || !idActualEditar) {
-    document.getElementById("respuestaEditar").textContent = "Debe buscar primero un ID.";
-    return;
-  }
-
-  const formulario = document.getElementById("formularioEditar");
-  const inputs = formulario.querySelectorAll("input");
-
-  const datosActualizados = { ID: idActualEditar };
-  inputs.forEach(input => {
-    datosActualizados[input.name] = input.value;
-  });
-
   try {
-    const res = await fetch(`${backendURL}/editar/${encodeURIComponent(hojaActualEditar)}/${idActualEditar}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datosActualizados)
-    });
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
+    const datos = await res.json();
+    const encontrado = datos.find(item => item.ID == id);
 
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById("respuestaEditar").textContent = "Datos actualizados correctamente.";
+    if (encontrado) {
+      datoEditando = encontrado;
+      hojaActualEditar = hoja;
+      idActualEditar = id;
+      generarFormulario(encontrado, "formularioEditar", true); // ← TRUE indica modo edición
+      document.getElementById("respuestaEditar").textContent = "";
     } else {
-      document.getElementById("respuestaEditar").textContent = "Error al actualizar los datos.";
+      datoEditando = null;
+      hojaActualEditar = null;
+      document.getElementById("formularioEditar").innerHTML = "";
+      document.getElementById("respuestaEditar").textContent = "ID no encontrado.";
     }
   } catch (error) {
-    console.error(error);
-    document.getElementById("respuestaEditar").textContent = "Error desconocido al actualizar.";
+    console.error("Error al buscar:", error);
+    document.getElementById("respuestaEditar").textContent = "Error al buscar.";
   }
 }
-
 
 // ------------------ ELIMINAR ------------------
 
