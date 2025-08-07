@@ -1,4 +1,15 @@
 const backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto por tu URL real
+const camposPermitidos = [
+  "Año",
+  "Mes",
+  "Fecha",
+  "Status",
+  "Concepto",
+  "Sub Concepto",
+  "Detalle",
+  "Créditos",
+  "Débitos"
+];
 
 // ------------------ LOGIN ------------------
 
@@ -139,104 +150,45 @@ const camposOcultos = [
   "Total Neto"
 ];
 
-function generarFormulario(datos, contenedorId, esEdicion = false) {
-  const contenedor = document.getElementById(contenedorId);
-  contenedor.innerHTML = "";
-
-  const formulario = document.createElement("form");
-  formulario.id = "formularioDatos";
-
-  const encabezados = Object.keys(datos);
-
-  encabezados.forEach((clave) => {
-    // Ocultar campos definidos
-    if (camposOcultos.includes(clave)) return;
-
-    const campo = document.createElement("div");
-    campo.className = "campo-formulario";
-
-    const etiqueta = document.createElement("label");
-    etiqueta.textContent = clave;
-    etiqueta.setAttribute("for", clave);
-
+function generarFormularioEditar(datos) {
+  const form = document.getElementById("formularioEditar");
+  form.innerHTML = ""; // Limpiar
+  camposPermitidos.forEach(campo => {
+    const label = document.createElement("label");
+    label.textContent = campo;
     const input = document.createElement("input");
-    input.name = clave;
-    input.id = clave;
-    input.value = datos[clave] || "";
-
-    // Si es edición, el campo ID no se debe poder editar
-    if (esEdicion && clave.toLowerCase() === "id") {
-      input.readOnly = true;
-    }
-
-    campo.appendChild(etiqueta);
-    campo.appendChild(input);
-    formulario.appendChild(campo);
+    input.type = "text";
+    input.name = campo;
+    input.value = datos[campo] || "";
+    form.appendChild(label);
+    form.appendChild(input);
+    form.appendChild(document.createElement("br"));
   });
-
-  contenedor.appendChild(formulario);
-}
-
-async function buscarPorIDEditar() {
-  const hoja = document.getElementById("hojaEditar").value;
-  const id = document.getElementById("idEditar").value.trim();
-
-  try {
-    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
-    const datos = await res.json();
-    const encontrado = datos.find(item => item.ID == id);
-
-    if (encontrado) {
-      datoEditando = encontrado;
-      hojaActualEditar = hoja;
-      idActualEditar = id;
-      generarFormulario(encontrado, "formularioEditar", true); // ← TRUE indica modo edición
-      document.getElementById("respuestaEditar").textContent = "";
-    } else {
-      datoEditando = null;
-      hojaActualEditar = null;
-      document.getElementById("formularioEditar").innerHTML = "";
-      document.getElementById("respuestaEditar").textContent = "ID no encontrado.";
-    }
-  } catch (error) {
-    console.error("Error al buscar:", error);
-    document.getElementById("respuestaEditar").textContent = "Error al buscar.";
-  }
 }
 
 async function editarDato() {
-  if (!hojaActualEditar || !idActualEditar) {
-    document.getElementById("respuestaEditar").textContent = "Primero busca un ID para editar.";
-    return;
-  }
-
-  const formulario = document.getElementById("formularioDatos");
+  const form = document.getElementById("formularioEditar");
   const datosEditados = {};
 
-  for (const elemento of formulario.elements) {
-    if (elemento.name) {
-      datosEditados[elemento.name] = elemento.value;
-    }
-  }
+  camposPermitidos.forEach(campo => {
+    const input = form.querySelector(`[name="${campo}"]`);
+    datosEditados[campo] = input.value;
+  });
 
   try {
     const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hojaActualEditar)}/${idActualEditar}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datosEditados),
+      body: JSON.stringify(datosEditados)
     });
 
-    if (res.ok) {
-      document.getElementById("respuestaEditar").textContent = "Datos editados correctamente.";
-    } else {
-      document.getElementById("respuestaEditar").textContent = "Error al editar los datos.";
-    }
+    document.getElementById("respuestaEditar").textContent =
+      res.ok ? "Datos editados correctamente" : "Error al editar";
   } catch (error) {
-    console.error("Error en la edición:", error);
+    console.error(error);
     document.getElementById("respuestaEditar").textContent = "Error de red o servidor.";
   }
 }
-
 // ------------------ ELIMINAR ------------------
 
 async function buscarPorIDEliminar() {
@@ -291,6 +243,21 @@ async function eliminarDato() {
 
 // ------------------ AGREGAR ------------------
 
+function generarFormularioAgregar() {
+  const form = document.getElementById("formAgregar");
+  form.innerHTML = ""; // Limpiar
+  camposPermitidos.forEach(campo => {
+    const label = document.createElement("label");
+    label.textContent = campo;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = campo;
+    form.appendChild(label);
+    form.appendChild(input);
+    form.appendChild(document.createElement("br"));
+  });
+}
+
 async function cargarFormulario() {
   const hoja = document.getElementById("hojaAgregar").value;
   const form = document.getElementById("formAgregar");
@@ -329,28 +296,25 @@ const columnasOcultas = ["Créditos limpios", "Débitos limpios",
 }
 
 async function enviarFormulario() {
-  const hoja = document.getElementById("hojaAgregar").value;
   const form = document.getElementById("formAgregar");
   const datos = {};
 
-  for (const el of form.elements) {
-    if (el.name) datos[el.name] = el.value;
-  }
+  camposPermitidos.forEach(campo => {
+    const input = form.querySelector(`[name="${campo}"]`);
+    datos[campo] = input.value;
+  });
 
   try {
-    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`, {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(document.getElementById("hojaAgregar").value)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos),
+      body: JSON.stringify(datos)
     });
 
-    if (res.ok) {
-      document.getElementById("respuestaAgregar").textContent = "Dato agregado exitosamente.";
-      form.reset();
-    } else {
-      document.getElementById("respuestaAgregar").textContent = "Error al agregar.";
-    }
+    document.getElementById("respuestaAgregar").textContent =
+      res.ok ? "Datos agregados correctamente" : "Error al agregar";
   } catch (error) {
+    console.error(error);
     document.getElementById("respuestaAgregar").textContent = "Error de red o servidor.";
   }
 }
