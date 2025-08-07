@@ -81,19 +81,13 @@ async function mostrarDatos(hoja, contenedorId) {
     const celda = filaTabla.insertCell();
     let valor = fila[col];
 
-    if (!isNaN(valor) && valor !== "" && 
-      (col.toLowerCase().includes("crédito") ||
-       col.toLowerCase().includes("créditos limpios") ||
-       col.toLowerCase().includes("débitos") ||
-       col.toLowerCase().includes("débitos limpios"))
-    ) {
-      valor = Number(valor).toLocaleString("es-CO", {
-        style: "currency",
-        currency: "COP",
-        minimumFractionDigits: 0
-      });
-    }
-
+    if (!isNaN(valor) && valor !== "") {
+  valor = Number(valor).toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  });
+}
     celda.textContent = valor;
   });
 });
