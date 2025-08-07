@@ -80,6 +80,10 @@ async function mostrarDatos(hoja, contenedorId) {
   encabezados.forEach(col => {
     const celda = filaTabla.insertCell();
     let valor = fila[col];
+if (typeof valor === "string") {
+  // Reemplaza coma decimal por punto para convertir a número
+  valor = valor.replace(",", ".");
+}
 
     if (!isNaN(valor) && valor !== "") {
   valor = Number(valor).toLocaleString("es-CO", {
