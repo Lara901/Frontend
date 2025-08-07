@@ -1,5 +1,6 @@
 const backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto por tu URL real
 
+
 // ------------------ LOGIN ------------------
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -59,49 +60,52 @@ async function mostrarDatos(hoja, contenedorId) {
     return;
   }
 
-   const columnasOcultas = ["Créditos", "Débitos", "Total Créditos", "Total Débitos", "Total Neto."];
+  const columnasOcultas = [
+    "Créditos", "Débitos", "Total Créditos", "Total Débitos", "Total Neto"
+  ];
+
+  const columnasConFormatoPesos = [
+  "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
+  "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+  "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "INGRESOS", "GASTOS", "DIFERENCIA",
+  "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
+  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"
+];
+
+  const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col));
+
   const tabla = document.createElement("table");
-  const encabezados = Object.keys(datos[0]).filter(encabezado => !columnasOcultas.includes(encabezado));
   const thead = tabla.createTHead();
   const filaEncabezado = thead.insertRow();
 
-  encabezados.forEach(encabezado => {
+  todasColumnas.forEach(col => {
     const th = document.createElement("th");
-    th.textContent = encabezado;
+    th.textContent = col;
     filaEncabezado.appendChild(th);
   });
 
   const tbody = tabla.createTBody();
 
+  datos.forEach(fila => {
+    const filaTabla = tbody.insertRow();
+    todasColumnas.forEach(col => {
+      const celda = filaTabla.insertCell();
+      let valor = fila[col];
 
-    datos.forEach(fila => {
-  const filaTabla = tbody.insertRow();
+      if (columnasConFormatoPesos.includes(col) && valor !== "" && !isNaN(valor.toString().replace(",", "."))) {
+        valor = Number(valor.toString().replace(",", ".")).toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
 
-  encabezados.forEach(col => {
-    const celda = filaTabla.insertCell();
-    let valor = fila[col];
-if (typeof valor === "string") {
-  // Reemplaza coma decimal por punto para convertir a número
-  valor = valor.replace(",", ".");
-}
-
-    if (!isNaN(valor) && valor !== "") {
-  valor = Number(valor).toLocaleString("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 1
+      celda.textContent = valor;
+    });
   });
-}
-    celda.textContent = valor;
-  });
-});
 
   contenedor.appendChild(tabla);
-}
-
-function verDatos() {
-  const hoja = document.getElementById("hojaSelect").value;
-  mostrarDatos(hoja, "tablaDatos");
 }
 
 // ------------------ BUSCAR POR ID ------------------
@@ -120,27 +124,37 @@ async function buscarPorId() {
 let datoEditando = null;
 let hojaActualEditar = null;
 let idActualEditar = null;
-function generarFormularioEditar(dato) {
-  const formulario = document.getElementById("formularioEditar");
-  formulario.innerHTML = ""; // Limpiar antes
+function generarFormulario(datos, contenedor, modo = "editar") {
+  contenedor.innerHTML = ""; // limpiar
 
-  for (const clave in dato) {
-    if (clave === "ID") continue; // No permitir editar el ID
+  const camposOcultos = ["Total Créditos", "Total Créditos.", "Total Débitos", "Total Débitos.", "Total neto", "Total neto."];
+  for (const campo in datos) {
+    if (camposOcultos.includes(campo)) continue; // omitir campos ocultos
 
     const label = document.createElement("label");
-    label.textContent = clave;
-    label.style.display = "block";
-
+    label.textContent = campo;
     const input = document.createElement("input");
-    input.type = "text";
-    input.name = clave;
-    input.value = dato[clave] || "";
+    input.name = campo;
+    input.value = datos[campo] || "";
 
-    input.style.width = "100%";
-    input.style.marginBottom = "10px";
+    // ID solo lectura en edición
+    if (campo === "ID") {
+      input.readOnly = true;
+      input.style.backgroundColor = "#eee";
+    }
 
-    formulario.appendChild(label);
-    formulario.appendChild(input);
+    // formato monetario automático si es número
+    input.addEventListener("blur", () => {
+      const valor = input.value.replace(",", ".").replace(/[^0-9.]/g, "");
+      const num = parseFloat(valor);
+      if (!isNaN(num)) {
+        input.value = num.toLocaleString("es-CO", { style: "currency", currency: "COP" });
+      }
+    });
+
+    contenedor.appendChild(label);
+    contenedor.appendChild(input);
+    contenedor.appendChild(document.createElement("br"));
   }
 }
 
