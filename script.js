@@ -59,8 +59,9 @@ async function mostrarDatos(hoja, contenedorId) {
     return;
   }
 
+   const columnasOcultas = ["Créditos", "Débitos"];
   const tabla = document.createElement("table");
-  const encabezados = Object.keys(datos[0]);
+  const encabezados = Object.keys(datos[0]).filter(encabezado => !columnasOcultas.includes(encabezado));
   const thead = tabla.createTHead();
   const filaEncabezado = thead.insertRow();
 
@@ -79,6 +80,14 @@ async function mostrarDatos(hoja, contenedorId) {
       celda.textContent = fila[col];
     });
   });
+  if (!isNaN(valor) && valor !== "" && col.toLowerCase().includes("Crédito", "Créditos limpios", "Débitos", "Débtios limpios")) {
+        valor = Number(valor).toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
+  td.textContent = valor;
 
   contenedor.appendChild(tabla);
 }
@@ -158,7 +167,9 @@ async function cargarFormulario() {
       return;
     }
 
-    const columnas = Object.keys(datos[0]);
+const columnasOcultas = ["Créditos", "Débitos"];
+
+    const columnas = Object.keys(datos[0]).filter(columnas => !columnasOcultas.includes(columnas));
 
     columnas.forEach(col => {
       const label = document.createElement("label");
