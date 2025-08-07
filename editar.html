@@ -1,60 +1,33 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>Editar/Eliminar</title>
-  <script>
-    if (localStorage.getItem('usuarioAutenticado') !== 'true') {
-      window.location.href = 'login.html';
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Gastos Por Mes</title>
+
 </head>
 <body>
-  <header>
-    <h1 id="tituloPrincipal">Nómina Hogar El Bosque</h1>
-    <nav>
-      <a class="nav-item" href="index.html">Inicio</a>
-      <a class="nav-item" href="facturas.html">Facturas</a>
-      <a class="nav-item" href="Control.html">Pacientes</a>
-      <a class="nav-item" href="Flujo.html">Caja</a>
-      <a class="nav-item" href="Gastos.html">Gastos</a>
-      <a class="nav-item" href="excel.html">Búsqueda</a>
-      <a class="nav-item" href="editar.html">Editar/Eliminar</a>
-    </nav>
-  </header>
-
-  <section class="Contenido">
-    <h2>Editar Contenido</h2>
-    <p>En esta opción se podrá editar o eliminar datos ya creados</p>
-<h3>Formulario dinámico</h3>
-  <label for="tabla">Selecciona la tabla:</label>
-  <select id="tabla">
-    <option value="">-- Selecciona --</option>
+        <header>
+          <h1 id= "Relleno"> ..</h1>
+          <h1 id= "tituloPrincipal"> Nomina Hogar El Bosque</h1>
+          <nav>
+<a id= 1 href="index.html">Inicio</a>
+            <a id= 1 href="buscar.html">Ver datos</a>
+            <a id= 1 href="acciones.html">Acciones</a>
+            <a id= 1 href="Agregar.html">Agregar</a>
+        </nav>
+          <h2>Editar Datos</h2>
+  <select id="hojaEditar">
     <option value="BD">BD</option>
-    <option value="Control_Pacientes">Control Pacientes</option>
-    <option value="Gastos_por_mes">Gastos</option>
+    <option value="Control pacientes">Control pacientes</option>
+    <option value="Flujo_de_caja">Flujo_de_caja</option>
+    <option value="INICIO">INICIO</option>
   </select>
-  <div id="busquedaID" style="display:none; margin: 10px 0;">
-  <label for="buscarID">Buscar por ID: </label>
-  <input type="text" id="buscarID" placeholder="Ej: 123" />
-  <button onclick="buscarPorID()">Buscar</button>
-</div>
-
-  <form id="formulario"></form>
-  <h3>Registros existentes</h3>
-  <div id="mensaje"></div>
-    </section>
-
-    <table border="1">
-  <thead id="encabezado">
-    <tr><th colspan="100%">Registros</th></tr>
-  </thead>
-  <tbody id="datos"></tbody>
-</table>
-
-  <script src="main.js"></script>
-  <script src="editar.js"></script>
+  <input type="text" id="idEditar" placeholder="ID a editar" />
+  <textarea id="datosEditar" placeholder="Nuevos datos (JSON)"></textarea>
+  <button onclick="editarDato()">Guardar cambios</button>
+  <div id="respuestaEditar"></div>
+  <script src="script.js"></script>
 </body>
 </html>

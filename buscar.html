@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="stylesheet" href="style.css">
-    <title>Actualizar</title>
-    <script>
+    <link rel="stylesheet" href="style.css">
+    <title>Facturas</title>
+<script>
   if (localStorage.getItem('usuarioAutenticado') !== 'true') {
     window.location.href = 'login.html';
   }
 </script>
 </head>
 <body>
+    
     <header>
-        
         <h1 id= "Relleno"> ..</h1>
         <h1 id= "tituloPrincipal"> Nomina Hogar El Bosque</h1>
         <nav>
@@ -22,21 +22,16 @@
             <a id= 1 href="acciones.html">Acciones</a>
             <a id= 1 href="Agregar.html">Agregar</a>
     </nav>
-        <h2>Agregar Datos</h2>
-
-  <select id="hojaAgregar" onchange="cargarFormulario()">
-    <option value="">Seleccione una hoja</option>
+        <section class="Contenido">
+        <h2>Todas Las Facturas</h2>
+            <select id="hojaSelect">
     <option value="BD">BD</option>
-    <option value="Control_pacientes">Control_pacientes</option>
+    <option value="Control pacientes">Control pacientes</option>
     <option value="Flujo_de_caja">Flujo_de_caja</option>
     <option value="INICIO">INICIO</option>
   </select>
-
-  <form id="formAgregar"></form>
-
-  <button onclick="enviarFormulario()">Agregar</button>
-  <div id="respuestaAgregar"></div>
-
+  <button onclick="verDatos()">Ver</button>
+  <div id="tablaDatos"></div>
   <script src="script.js"></script>
 </body>
 </html>
