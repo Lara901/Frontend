@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function login() {
   const usuario = document.getElementById('usuario').value;
-  const contraseña = document.getElementById('contrasena').value;
+  const contraseña = document.getElementById('contraseña').value;
 
   try {
     const res = await fetch(`${backendURL}/login`, {
