@@ -23,7 +23,7 @@ async function login() {
 
     const data = await res.json();
 
-    if (res.ok && data.success) {
+    if (res.ok && data.login) {
       localStorage.setItem('usuarioAutenticado', 'true');
       window.location.href = 'index.html';
     } else {
