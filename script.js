@@ -59,7 +59,7 @@ async function mostrarDatos(hoja, contenedorId) {
     return;
   }
 
-   const columnasOcultas = ["Créditos", "Débitos"];
+   const columnasOcultas = ["Créditos", "Débitos", "Total Créditos", "Total Débitos", "Total Neto."];
   const tabla = document.createElement("table");
   const encabezados = Object.keys(datos[0]).filter(encabezado => !columnasOcultas.includes(encabezado));
   const thead = tabla.createTHead();
