@@ -117,46 +117,106 @@ async function buscarPorId() {
 }
 
 // ------------------ EDITAR ------------------
+let datoEditando = null;
+let hojaActualEditar = null;
+let idActualEditar = null;
+function generarFormularioEditar(dato) {
+  const formulario = document.getElementById("formularioEditar");
+  formulario.innerHTML = ""; // Limpiar antes
 
-async function editarDato() {
-  const hoja = document.getElementById("hojaEditar").value;
-  const id = document.getElementById("idEditar").value;
-  const campo = document.getElementById("campoEditar").value;
-  const nuevoValor = document.getElementById("valorEditar").value;
+  for (const clave in dato) {
+    if (clave === "ID") continue; // No permitir editar el ID
 
-  try {
-    // Buscar el dato antes de editar
-    const resBusqueda = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`);
-    const dato = await resBusqueda.json();
+    const label = document.createElement("label");
+    label.textContent = clave;
+    label.style.display = "block";
 
-    if (!dato || Object.keys(dato).length === 0) {
-      document.getElementById("datoActualEditar").textContent = "Dato no encontrado.";
-      return;
-    }
-document.getElementById("datoActualEditar").textContent = JSON.stringify(dato, null, 2);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = clave;
+    input.value = dato[clave] || "";
 
- if (!confirm("¿Deseas editar este dato?")) return;
+    input.style.width = "100%";
+    input.style.marginBottom = "10px";
 
-  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ [campo]: nuevoValor }),
-  });
-
- 
-
-  const mensaje = document.getElementById("mensajeEditar");
-  if (res.ok) {
-    mensaje.textContent = "Dato editado correctamente.";
-  } else {
-    mensaje.textContent = "Error al editar.";
+    formulario.appendChild(label);
+    formulario.appendChild(input);
   }
-}catch (error) {
-    document.getElementById("mensajeEditar").textContent = "Error al buscar o editar el dato.";
-     }
 }
 
+async function buscarPorIDEditar() {
+  const hoja = document.getElementById("hojaEditar").value;
+  const id = document.getElementById("idEditar").value.trim();
+
+  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
+  const datos = await res.json();
+  const encontrado = datos.find(item => item.ID == id);
+
+  if (encontrado) {
+    datoEditando = encontrado;
+    hojaActualEditar = hoja;
+    idActualEditar = id;
+    generarFormularioEditar(encontrado);
+    document.getElementById("respuestaEditar").textContent = "";
+  } else {
+    datoEditando = null;
+    hojaActualEditar = null;
+    document.getElementById("formularioEditar").innerHTML = "";
+    document.getElementById("respuestaEditar").textContent = "ID no encontrado.";
+  }
+}
+
+async function editarDato() {
+  if (!datoEditando || !hojaActualEditar || !idActualEditar) {
+    document.getElementById("respuestaEditar").textContent = "Debe buscar primero un ID.";
+    return;
+  }
+
+  const formulario = document.getElementById("formularioEditar");
+  const inputs = formulario.querySelectorAll("input");
+
+  const datosActualizados = { ID: idActualEditar };
+  inputs.forEach(input => {
+    datosActualizados[input.name] = input.value;
+  });
+
+  try {
+    const res = await fetch(`${backendURL}/editar/${encodeURIComponent(hojaActualEditar)}/${idActualEditar}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datosActualizados)
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("respuestaEditar").textContent = "Datos actualizados correctamente.";
+    } else {
+      document.getElementById("respuestaEditar").textContent = "Error al actualizar los datos.";
+    }
+  } catch (error) {
+    console.error(error);
+    document.getElementById("respuestaEditar").textContent = "Error desconocido al actualizar.";
+  }
+}
+
+
 // ------------------ ELIMINAR ------------------
+
+async function buscarPorIDEliminar() {
+  const hoja = document.getElementById("hojaEliminar").value;
+  const id = document.getElementById("idEliminar").value.trim();
+  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
+  const datos = await res.json();
+  const encontrado = datos.find(item => item.ID == id);
+
+  const pre = document.getElementById("datoActualEliminar");
+  if (encontrado) {
+    pre.textContent = JSON.stringify(encontrado, null, 2);
+  } else {
+    pre.textContent = "ID no encontrado.";
+  }
+}
+
 
 async function eliminarDato() {
   const hoja = document.getElementById("hojaEliminar").value;
