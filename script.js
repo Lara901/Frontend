@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function login() {
   const usuario = document.getElementById('usuario').value;
-  const contrasena = document.getElementById('contrasena').value;
+  const contraseña = document.getElementById('contrasena').value;
 
   try {
     const res = await fetch(`${backendUrl}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usuario, contrasena })
+      body: JSON.stringify({ usuario, contraseña })
     });
 
     const data = await res.json();
