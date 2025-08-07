@@ -83,6 +83,11 @@ async function mostrarDatos(hoja, contenedorId) {
   contenedor.appendChild(tabla);
 }
 
+function verDatos() {
+  const hoja = document.getElementById("hojaSelect").value;
+  mostrarDatos(hoja, "tablaDatos");
+}
+
 // ------------------ BUSCAR POR ID ------------------
 
 async function buscarPorId() {
