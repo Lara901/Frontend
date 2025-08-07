@@ -48,7 +48,7 @@ function verificarAcceso() {
 // ------------------ MOSTRAR DATOS ------------------
 
 async function mostrarDatos(hoja, contenedorId) {
-  const res = await fetch(`${backendURL}/buscar/${encodeURIComponent(hoja)}`);
+  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
   const datos = await res.json();
 
   const contenedor = document.getElementById(contenedorId);
@@ -88,7 +88,7 @@ async function mostrarDatos(hoja, contenedorId) {
 async function buscarPorId() {
   const hoja = document.getElementById("hojaBuscar").value;
   const id = document.getElementById("idBuscar").value;
-  const res = await fetch(`${backendURL}/buscar/${encodeURIComponent(hoja)}/${id}`);
+  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`);
   const datos = await res.json();
 
   const resultado = document.getElementById("resultadoBuscar");
@@ -103,7 +103,7 @@ async function editarDato() {
   const campo = document.getElementById("campoEditar").value;
   const nuevoValor = document.getElementById("valorEditar").value;
 
-  const res = await fetch(`${backendURL}/editar/${encodeURIComponent(hoja)}/${id}`, {
+  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ [campo]: nuevoValor }),
@@ -123,7 +123,7 @@ async function eliminarDato() {
   const hoja = document.getElementById("hojaEliminar").value;
   const id = document.getElementById("idEliminar").value;
 
-  const res = await fetch(`${backendURL}/eliminar/${encodeURIComponent(hoja)}/${id}`, {
+  const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`, {
     method: "DELETE",
   });
 
@@ -145,7 +145,7 @@ async function cargarFormulario() {
   if (!hoja) return;
 
   try {
-    const res = await fetch(`${backendURL}/buscar/${encodeURIComponent(hoja)}`);
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
     const datos = await res.json();
 
     if (datos.length === 0) {
@@ -181,7 +181,7 @@ async function enviarFormulario() {
   }
 
   try {
-    const res = await fetch(`${backendURL}/agregar/${encodeURIComponent(hoja)}`, {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos),
