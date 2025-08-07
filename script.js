@@ -150,9 +150,43 @@ const camposOcultos = [
   "Total Neto"
 ];
 
+async function buscarPorIDEditar() {
+  const hoja = document.getElementById("hojaEditar").value;
+  const id = document.getElementById("idEditar").value.trim();
+
+  if (!hoja || !id) {
+    alert("Selecciona una hoja y escribe un ID");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`);
+    const datos = await res.json();
+
+    const pre = document.getElementById("datoActualEditar");
+
+    if (!datos || Object.keys(datos).length === 0) {
+      pre.textContent = "ID no encontrado.";
+      return;
+    }
+
+    pre.textContent = JSON.stringify(datos, null, 2);
+    hojaActualEditar = hoja;
+    idActualEditar = id;
+
+    // Mostrar formulario solo con campos permitidos
+    generarFormularioEditar(datos);
+
+  } catch (error) {
+    console.error(error);
+    document.getElementById("datoActualEditar").textContent = "Error al buscar el ID.";
+  }
+}
+
 function generarFormularioEditar(datos) {
   const form = document.getElementById("formularioEditar");
-  form.innerHTML = ""; // Limpiar
+  form.innerHTML = "";
+
   camposPermitidos.forEach(campo => {
     const label = document.createElement("label");
     label.textContent = campo;
@@ -160,6 +194,11 @@ function generarFormularioEditar(datos) {
     input.type = "text";
     input.name = campo;
     input.value = datos[campo] || "";
+
+    if (campo === "ID") {
+      input.readOnly = true; // No editable
+    }
+
     form.appendChild(label);
     form.appendChild(input);
     form.appendChild(document.createElement("br"));
