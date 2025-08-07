@@ -2,26 +2,37 @@ const backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto
 
 // ------------------ LOGIN ------------------
 
-async function login(event) {
-  event.preventDefault();
-  const usuario = document.getElementById("usuario").value;
-  const contraseña = document.getElementById("contraseña").value;
-
-  const res = await fetch(`${backendURL}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usuario, contraseña }),
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Evita que el formulario recargue la página
+    await login();      // Llama a la función login
   });
+});
 
-  const data = await res.json();
+async function login() {
+  const usuario = document.getElementById('usuario').value;
+  const contrasena = document.getElementById('contrasena').value;
 
-  const mensaje = document.getElementById("mensajeLogin");
-  if (res.ok && data.autenticado) {
-    mensaje.textContent = "Inicio de sesión exitoso";
-    localStorage.setItem("token", "accesoPermitido");
-    window.location.href = "buscar.html";
-  } else {
-    mensaje.textContent = "Credenciales incorrectas";
+  try {
+    const res = await fetch(`${backendUrl}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario, contrasena })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      localStorage.setItem('usuarioAutenticado', 'true');
+      window.location.href = 'index.html';
+    } else {
+      alert(data.message || 'Credenciales inválidas');
+    }
+
+  } catch (error) {
+    console.error('Error en login:', error);
+    alert('Error al conectar con el servidor');
   }
 }
 
