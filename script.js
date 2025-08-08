@@ -10,7 +10,13 @@ const camposPermitidos = [
   "Créditos",
   "Débitos"
 ];
-
+  const columnasConFormatoPesos = [
+  "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
+  "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+  "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "INGRESOS", "GASTOS", "DIFERENCIA",
+  "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
+  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"];
 // ------------------ LOGIN ------------------
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -193,7 +199,21 @@ function generarFormularioEditar(datos) {
     const input = document.createElement("input");
     input.type = "text";
     input.name = campo;
-    input.value = datos[campo] || "";
+
+    let valor = datos[campo] || "";
+    // Formatear en pesos si la columna lo requiere
+    if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      const valorNumerico = Number(valor.toString().replace(/\./g, "").replace(",", "."));
+      if (!isNaN(valorNumerico)) {
+        valor = valorNumerico.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
+    }
+
+    input.value = valor;
     form.appendChild(label);
     form.appendChild(input);
     form.appendChild(document.createElement("br"));
@@ -228,6 +248,7 @@ async function guardarEdicion() {
     document.getElementById("respuestaEditar").textContent = "Error al conectar con el servidor.";
   }
 }
+
 // ------------------ ELIMINAR ------------------
 
 async function buscarPorIDEliminar() {
@@ -282,22 +303,6 @@ async function eliminarDato() {
 
 // ------------------ AGREGAR ------------------
 
-function generarFormularioAgregar() {
-  const form = document.getElementById("formularioAgregar");
-  form.innerHTML = "";
-
-  camposPermitidos.forEach(campo => {
-    const label = document.createElement("label");
-    label.textContent = campo;
-    const input = document.createElement("input");
-    input.type = "text";
-    input.name = campo;
-    form.appendChild(label);
-    form.appendChild(input);
-    form.appendChild(document.createElement("br"));
-  });
-}
-
 async function cargarFormulario() {
   const hoja = document.getElementById("hojaAgregar").value;
   const form = document.getElementById("formAgregar");
@@ -314,16 +319,31 @@ async function cargarFormulario() {
       return;
     }
 
-const columnasOcultas = ["Créditos limpios", "Débitos limpios",
-  "Total Créditos", "Total Débitos", "Total Neto"];
+    const columnasOcultas = [
+      "Créditos limpios", "Débitos limpios",
+      "Total Créditos", "Total Débitos", "Total Neto"
+    ];
 
-    const columnas = Object.keys(datos[0]).filter(columnas => !columnasOcultas.includes(columnas));
+    const columnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col));
 
     columnas.forEach(col => {
       const label = document.createElement("label");
       label.textContent = col;
       const input = document.createElement("input");
       input.name = col;
+
+      // Si es una columna con formato pesos y el dato existe, mostrarlo formateado
+      if (columnasConFormatoPesos.includes(col.trim()) && datos[0][col]) {
+        const valorNumerico = Number(datos[0][col].toString().replace(/\./g, "").replace(",", "."));
+        if (!isNaN(valorNumerico)) {
+          input.value = valorNumerico.toLocaleString("es-CO", {
+            style: "currency",
+            currency: "COP",
+            minimumFractionDigits: 0
+          });
+        }
+      }
+
       input.required = true;
       form.appendChild(label);
       form.appendChild(input);
@@ -336,26 +356,45 @@ const columnasOcultas = ["Créditos limpios", "Débitos limpios",
 }
 
 async function enviarFormulario() {
+  const hoja = document.getElementById("hojaAgregar").value;
+
+  // Paso 1: Obtener el ID máximo existente
+  let nuevoID = 1; // Si no hay datos, empezará en 1
+  try {
+    const resDatos = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
+    const datosExistentes = await resDatos.json();
+
+    if (datosExistentes.length > 0) {
+      const ids = datosExistentes.map(d => parseInt(d.ID, 10)).filter(n => !isNaN(n));
+      if (ids.length > 0) {
+        nuevoID = Math.max(...ids) + 1;
+      }
+    }
+  } catch (error) {
+    console.error("Error obteniendo ID máximo:", error);
+  }
+
+  // Paso 2: Construir datos a enviar
   const form = document.getElementById("formAgregar");
   const inputs = form.querySelectorAll("input, select, textarea");
 
-  let datosEnviar = {};
+  let datosEnviar = { ID: nuevoID }; // ← ID automático
   camposPermitidos.forEach(campo => {
     const input = Array.from(inputs).find(inp => inp.name === campo);
     if (input) datosEnviar[campo] = input.value;
   });
 
+  // Paso 3: Enviar datos al backend
   try {
-    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(document.getElementById("hojaAgregar").value)}`, {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datosEnviar)
     });
 
     const respuesta = document.getElementById("respuestaAgregar");
-
     if (res.ok) {
-      respuesta.textContent = "Datos agregados correctamente.";
+      respuesta.textContent = `Datos agregados correctamente. Nuevo ID: ${nuevoID}`;
     } else {
       respuesta.textContent = "Error al agregar datos.";
     }
