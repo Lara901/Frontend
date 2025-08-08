@@ -76,6 +76,8 @@ async function mostrarDatos(hoja, contenedorId) {
     return;
   }
 
+  const columnasOcultas = [];
+
   const columnasConFormatoPesos = [
   "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
   "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
@@ -144,13 +146,7 @@ async function buscarPorId() {
 let datoEditando = null;
 let hojaActualEditar = null;
 let idActualEditar = null;
-const camposOcultos = [
-  "Créditos limpios",
-  "Débitos limpios",
-  "Total Créditos",
-  "Total Débitos",
-  "Total Neto"
-];
+const camposOcultos = [];
 
 async function buscarPorIDEditar() {
   const hoja = document.getElementById("hojaEditar").value;
@@ -244,7 +240,6 @@ async function guardarEdicion() {
     document.getElementById("respuestaEditar").textContent = "Error al conectar con el servidor.";
   }
 }
-
 // ------------------ ELIMINAR ------------------
 
 async function buscarPorIDEliminar() {
@@ -315,10 +310,7 @@ async function cargarFormulario() {
       return;
     }
 
-    const columnasOcultas = [
-      "Créditos limpios", "Débitos limpios",
-      "Total Créditos", "Total Débitos", "Total Neto"
-    ];
+    const columnasOcultas = [];
 
     const columnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col));
 
