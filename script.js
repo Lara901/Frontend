@@ -202,7 +202,7 @@ function generarFormularioEditar(datos) {
 
 async function guardarEdicion() {
   const form = document.getElementById("formularioEditar");
-  const inputs = form.querySelectorAll("input");
+  const inputs = form.querySelectorAll("input, select, textarea");
 
   let datosEnviar = {};
   camposPermitidos.forEach(campo => {
@@ -335,9 +335,9 @@ const columnasOcultas = ["Créditos limpios", "Débitos limpios",
   }
 }
 
-async function agregarFila() {
-  const form = document.getElementById("formularioAgregar");
-  const inputs = form.querySelectorAll("input");
+async function enviarFormulario() {
+  const form = document.getElementById("formAgregar");
+  const inputs = form.querySelectorAll("input, select, textarea");
 
   let datosEnviar = {};
   camposPermitidos.forEach(campo => {
@@ -345,9 +345,21 @@ async function agregarFila() {
     if (input) datosEnviar[campo] = input.value;
   });
 
-  await fetch(`${backendURL}/hoja/${encodeURIComponent(hojaActualAgregar)}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datosEnviar)
-  });
+  try {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(document.getElementById("hojaAgregar").value)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datosEnviar)
+    });
+
+    const respuesta = document.getElementById("respuestaAgregar");
+
+    if (res.ok) {
+      respuesta.textContent = "Datos agregados correctamente.";
+    } else {
+      respuesta.textContent = "Error al agregar datos.";
+    }
+  } catch (error) {
+    document.getElementById("respuestaAgregar").textContent = "Error al conectar con el servidor.";
+  }
 }
