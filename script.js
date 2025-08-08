@@ -76,10 +76,6 @@ async function mostrarDatos(hoja, contenedorId) {
     return;
   }
 
-  const columnasOcultas = [
-    "Créditos", "Débitos", "Total Créditos", "Total Débitos", "Total Neto"
-  ];
-
   const columnasConFormatoPesos = [
   "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
   "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
