@@ -210,11 +210,23 @@ async function guardarEdicion() {
     if (input) datosEnviar[campo] = input.value;
   });
 
-  await fetch(`${backendURL}/hoja/${encodeURIComponent(hojaActualEditar)}/${idActualEditar}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datosEnviar)
-  });
+  try {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hojaActualEditar)}/${idActualEditar}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datosEnviar)
+    });
+
+    const respuesta = document.getElementById("respuestaEditar");
+
+    if (res.ok) {
+      respuesta.textContent = "Cambios guardados correctamente.";
+    } else {
+      respuesta.textContent = "Error al guardar cambios.";
+    }
+  } catch (error) {
+    document.getElementById("respuestaEditar").textContent = "Error al conectar con el servidor.";
+  }
 }
 // ------------------ ELIMINAR ------------------
 
