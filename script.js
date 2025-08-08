@@ -187,7 +187,7 @@ function generarFormularioEditar(datos) {
   const form = document.getElementById("formularioEditar");
   form.innerHTML = "";
 
-  camposPermitidosSheets.forEach(campo => {
+  camposPermitidos.forEach(campo => {
     const label = document.createElement("label");
     label.textContent = campo;
     const input = document.createElement("input");
@@ -205,7 +205,7 @@ async function guardarEdicion() {
   const inputs = form.querySelectorAll("input");
 
   let datosEnviar = {};
-  camposPermitidosSheets.forEach(campo => {
+  camposPermitidos.forEach(campo => {
     const input = Array.from(inputs).find(inp => inp.name === campo);
     if (input) datosEnviar[campo] = input.value;
   });
@@ -274,7 +274,7 @@ function generarFormularioAgregar() {
   const form = document.getElementById("formularioAgregar");
   form.innerHTML = "";
 
-  camposPermitidosSheets.forEach(campo => {
+  camposPermitidos.forEach(campo => {
     const label = document.createElement("label");
     label.textContent = campo;
     const input = document.createElement("input");
@@ -328,7 +328,7 @@ async function agregarFila() {
   const inputs = form.querySelectorAll("input");
 
   let datosEnviar = {};
-  camposPermitidosSheets.forEach(campo => {
+  camposPermitidos.forEach(campo => {
     const input = Array.from(inputs).find(inp => inp.name === campo);
     if (input) datosEnviar[campo] = input.value;
   });
