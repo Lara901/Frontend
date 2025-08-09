@@ -125,7 +125,7 @@ tabla.classList.add("tabla-datos");
       const celda = filaTabla.insertCell();
       let valor = fila[col];
 
-      if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      if (columnasConFormatoPesos.includes(col.trim()) && valor !== "") {
       const valorNumerico = limpiarValorPeso(valor);
       if (!isNaN(valorNumerico) && valorNumerico !== 0) {
         valor = valorNumerico.toLocaleString("es-CO", {
