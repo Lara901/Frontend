@@ -497,28 +497,24 @@ async function cargarFormulario() {
     const columnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col));
 
     columnas.forEach(col => {
-      const label = document.createElement("label");
-      label.textContent = col;
-      const input = document.createElement("input");
-      input.name = col;
-      input.required = true;
+  const label = document.createElement("label");
+  label.textContent = col;
 
-      // Si es una columna de formato pesos
-     if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
-      const valorNumerico = limpiarValorPeso(valor);
-      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
-        valor = valorNumerico.toLocaleString("es-CO", {
-          style: "currency",
-          currency: "COP",
-          minimumFractionDigits: 0
-        });
-      }
-    }
+  const input = document.createElement("input");
+  input.name = col;
+  input.required = true;
 
-      form.appendChild(label);
-      form.appendChild(input);
-      form.appendChild(document.createElement("br"));
-    });
+  // Si es una columna de formato pesos, aplicar formato numérico inicial
+  if (columnasConFormatoPesos.includes(col.trim())) {
+    input.type = "number";
+    input.step = "any";
+    input.placeholder = "0";
+  }
+
+  form.appendChild(label);
+  form.appendChild(input);
+  form.appendChild(document.createElement("br"));
+});
 
   } catch (error) {
     form.innerHTML = "<p>Error al cargar los campos de la hoja.</p>";
