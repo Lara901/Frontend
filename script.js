@@ -76,7 +76,7 @@ async function mostrarDatos(hoja, contenedorId) {
     return;
   }
 
-  const columnasOcultas = [];
+  const columnasOculta = [];
 
   const columnasConFormatoPesos = [
   "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
@@ -87,7 +87,7 @@ async function mostrarDatos(hoja, contenedorId) {
   "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"
 ];
 
- const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col.trim()));
+ const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOculta.includes(col.trim()));
 
   const tabla = document.createElement("table");
 tabla.classList.add("tabla-datos");
@@ -212,49 +212,14 @@ async function buscarPorIDEditar() {
     pre.textContent = JSON.stringify(datos, null, 2);
     hojaActualEditar = hoja;
     idActualEditar = id;
+    generarFormularioEditar(datos, encabezados);
+    } catch (error) {
+    console.error(error);
+    document.getElementById("datoActualEditar").textContent = "Error al buscar el ID.";
+  }
+}
 
-function generarFormularioEditar(datos) {
-  const form = document.getElementById("formularioEditar");
-  form.innerHTML = "";
-
-  // Campo ID (solo lectura)
-  const labelID = document.createElement("label");
-  labelID.textContent = "ID";
-  const inputID = document.createElement("input");
-  inputID.type = "text";
-  inputID.name = "ID";
-  inputID.value = datos["ID"] || "";
-  inputID.readOnly = true;
-  form.appendChild(labelID);
-  form.appendChild(inputID);
-  form.appendChild(document.createElement("br"));
-
-  // Campos editables
-  camposPermitidos.forEach(campo => {
-    const label = document.createElement("label");
-    label.textContent = campo;
-    const input = document.createElement("input");
-    input.type = "text";
-    input.name = campo;
-
-    let valor = datos[campo] || "";
-    if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
-      const valorNumerico = Number(valor.toString().replace(/\./g, "").replace(",", "."));
-      if (!isNaN(valorNumerico)) {
-        valor = valorNumerico.toLocaleString("es-CO", {
-          style: "currency",
-          currency: "COP",
-          minimumFractionDigits: 0
-        });
-      }
-    }
-
-    input.value = valor;
-    form.appendChild(label);
-    form.appendChild(input);
-    form.appendChild(document.createElement("br"));
-  });
-}const columnasOcultas = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
+const columnasOcultas = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
 
 function generarFormularioEditar(datos, encabezados) {
   const form = document.getElementById("formularioEditar");
@@ -289,11 +254,6 @@ function generarFormularioEditar(datos, encabezados) {
     form.appendChild(input);
     form.appendChild(document.createElement("br"));
   });
-}
-} catch (error) {
-    console.error(error);
-    document.getElementById("datoActualEditar").textContent = "Error al buscar el ID.";
-  }
 }
 
 async function guardarEdicion() {
