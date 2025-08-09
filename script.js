@@ -17,7 +17,7 @@ const camposPermitidos = [
   "Septiembre", "Octubre", "Noviembre", "Diciembre",
   "INGRESOS", "GASTOS", "DIFERENCIA",
   "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
-  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"];
+  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total", "Carnes", "Huevos", "Mercado de Plaza", "Pollo", "Quesos", "Supermercado", "Suma total", "Acueducto", "Claro", "Codensa", "Gas Natural", "Suma total","Intereses Cesantias", "Nomina Empleados", "Nomina Socios", "Parafiscales", "Suma total", "Participacion Costos"];
 // ------------------ LOGIN ------------------
 
 document.addEventListener('DOMContentLoaded', () => {
