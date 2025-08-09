@@ -185,6 +185,19 @@ function generarFormularioEditar(datos) {
   const form = document.getElementById("formularioEditar");
   form.innerHTML = "";
 
+  // Campo ID (solo lectura)
+  const labelID = document.createElement("label");
+  labelID.textContent = "ID";
+  const inputID = document.createElement("input");
+  inputID.type = "text";
+  inputID.name = "ID";
+  inputID.value = datos["ID"] || "";
+  inputID.readOnly = true;
+  form.appendChild(labelID);
+  form.appendChild(inputID);
+  form.appendChild(document.createElement("br"));
+
+  // Campos editables
   camposPermitidos.forEach(campo => {
     const label = document.createElement("label");
     label.textContent = campo;
@@ -193,7 +206,6 @@ function generarFormularioEditar(datos) {
     input.name = campo;
 
     let valor = datos[campo] || "";
-    // Formatear en pesos si la columna lo requiere
     if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
       const valorNumerico = Number(valor.toString().replace(/\./g, "").replace(",", "."));
       if (!isNaN(valorNumerico)) {
@@ -217,62 +229,35 @@ async function guardarEdicion() {
   const inputs = form.querySelectorAll("input, select, textarea");
 
   let datosEnviar = {};
-
-  // 1️⃣ Obtener ID actual del formulario
-  let idValor = datosEnviar["ID"] || idActualEditar;
-  // 2️⃣ Si no tiene ID, pedir uno nuevo al backend
-  if (!idValor) {
-    try {
-      const resID = await fetch(`${backendURL}/nuevo-id/${encodeURIComponent(hojaActualEditar)}`);
-      const dataID = await resID.json();
-      idValor = dataID.nuevoID;
-    } catch (error) {
-      console.error("Error al obtener nuevo ID:", error);
-    }
-  }
-const labelID = document.createElement("label");
-labelID.textContent = "ID";
-const inputID = document.createElement("input");
-inputID.type = "text";
-inputID.name = "ID";
-inputID.value = datos["ID"] || "";
-inputID.readOnly = true;
-form.appendChild(labelID);
-form.appendChild(inputID);
-form.appendChild(document.createElement("br"));
-  // 3️⃣ Construir objeto solo con campos permitidos
+  
+  // Obtener ID desde el formulario
+  const idValor = Array.from(inputs).find(inp => inp.name === "ID")?.value;
+  
+  // Construir objeto con campos permitidos
   camposPermitidos.forEach(campo => {
     const input = Array.from(inputs).find(inp => inp.name === campo);
     if (input) {
       let valor = input.value.trim();
-
-      // Formatear valores numéricos de columnas en formato pesos
       if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
-        valor = valor
-          .replace(/\$/g, "")  // quitar símbolo pesos
-          .replace(/\./g, "")  // quitar separador miles
-          .replace(",", ".");  // convertir coma decimal a punto
+        valor = valor.replace(/\$/g, "").replace(/\./g, "").replace(",", ".");
       }
-
       datosEnviar[campo] = valor;
     }
   });
 
-  // 4️⃣ Asegurarnos que el ID está incluido en el envío
+  // Incluir ID en el envío
   datosEnviar["ID"] = idValor;
 
-  // 5️⃣ Enviar al backend
   try {
-    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hojaActualEditar)}/${idActualEditar}`, {
+    const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hojaActualEditar)}/${idValor}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datosEnviar)
     });
 
     const respuesta = document.getElementById("respuestaEditar");
-
     if (res.ok) {
-      respuesta.textContent = `Cambios guardados correctamente. ID asignado: ${idValor}`;
+      respuesta.textContent = `Cambios guardados correctamente. ID: ${idValor}`;
     } else {
       respuesta.textContent = "Error al guardar cambios.";
     }
