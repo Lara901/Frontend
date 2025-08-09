@@ -119,26 +119,24 @@ tabla.classList.add("tabla-datos");
 
   const tbody = tabla.createTBody();
 
-  datos.forEach(fila => {
-    const filaTabla = tbody.insertRow();
-    todasColumnas.forEach(col => {
-      const celda = filaTabla.insertCell();
-      let valor = fila[col];
+  encabezados.forEach(campo => {
+  let valor = fila[campo] ?? "";
 
-      if (columnasConFormatoPesos.includes(col.trim()) && valor !== "") {
-      const valorNumerico = limpiarValorPeso(valor);
-      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
-        valor = valorNumerico.toLocaleString("es-CO", {
-          style: "currency",
-          currency: "COP",
-          minimumFractionDigits: 0
-        });
-      }
+  // Limpiar valor y verificar columna
+  if (columnasConFormatoPesos.map(c => c.trim()).includes(campo.trim())) {
+    let valorNumerico = Number(String(valor).replace(/\D/g, "")); // elimina todo lo que no sea número
+    if (!isNaN(valorNumerico) && valorNumerico > 0) {
+      valor = valorNumerico.toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 0
+      });
     }
+  }
 
-      celda.textContent = valor;
-    });
-  });
+  // agregar a la celda
+  html += `<td>${valor}</td>`;
+});
 
   contenedor.appendChild(tabla);
 }
