@@ -130,8 +130,7 @@ tabla.classList.add("tabla-datos");
 function verDatos() {
   const hoja = document.getElementById("hojaSelect").value;
   mostrarDatos(hoja, "tablaDatos");
-}
-const selectTabla = document.getElementById('tablaSelect');
+} 
 const contenedorTabla = document.getElementById('contenedorTabla');
 
 document.addEventListener("DOMContentLoaded", () => {
