@@ -189,16 +189,9 @@ function generarTabla(encabezados, datos) {
       let valor = fila[columna] ?? ""; // Previene undefined
 
       // Si la columna está en la lista, formatear a pesos
-      if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
-      const valorNumerico = limpiarValorPeso(valor);
-      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
-        valor = valorNumerico.toLocaleString("es-CO", {
-          style: "currency",
-          currency: "COP",
-          minimumFractionDigits: 0
-        });
+      if (columnasConFormatoPesos.includes(columna)) {
+        valor = formatearPesos(valor);
       }
-    }
 
       td.textContent = valor;
     });
@@ -360,7 +353,7 @@ function generarFormularioEditar(datos, encabezados) {
     let valor = datos[campo] || "";
 
     // Formatear en pesos si está en la lista
-    if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+   if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
       const valorNumerico = limpiarValorPeso(valor);
       if (!isNaN(valorNumerico) && valorNumerico !== 0) {
         valor = valorNumerico.toLocaleString("es-CO", {
@@ -509,7 +502,7 @@ async function cargarFormulario() {
       input.required = true;
 
       // Si es una columna de formato pesos
-      if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+     if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
       const valorNumerico = limpiarValorPeso(valor);
       if (!isNaN(valorNumerico) && valorNumerico !== 0) {
         valor = valorNumerico.toLocaleString("es-CO", {
