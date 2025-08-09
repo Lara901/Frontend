@@ -548,11 +548,12 @@ async function enviarFormulario() {
 
   // 3️⃣ Convertir campos de formato pesos a número
   columnasConFormatoPesos.forEach(col => {
-    if (datosEnviar[col]) {
-      datosEnviar[col] = Number(datosEnviar[col].toString().replace(/[^0-9,-]/g, "").replace(",", "."));
-    }
-  });
-
+  if (col !== "ID" && datosEnviar[col]) {
+    datosEnviar[col] = Number(
+      datosEnviar[col].toString().replace(/[^0-9,-]/g, "").replace(",", ".")
+    );
+  }
+});
   // 4️⃣ Enviar datos al backend
   try {
     const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`, {
