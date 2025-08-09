@@ -1,4 +1,5 @@
 const backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto por tu URL real
+let hojaActualEditar = null;
 const camposPermitidos = [
   "Año",
   "Mes",
@@ -134,7 +135,7 @@ function verDatos() {
 const contenedorTabla = document.getElementById('contenedorTabla');
 
 document.addEventListener("DOMContentLoaded", () => {
-  const selectTabla = document.getElementById("hojaEditar"); // o el selector que uses
+  const selectTabla = document.getElementById("hojaEditar"); // debe coincidir con tu HTML
   if (selectTabla) {
     selectTabla.addEventListener('change', () => {
       const tablaSeleccionada = selectTabla.value;
@@ -143,16 +144,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   } else {
-    console.warn("No se encontró el select con id 'selectTabla'");
+    console.warn("No se encontró el select con id 'hojaEditar'");
   }
 });
 
-selectTabla.addEventListener('change', () => {
-    const tablaSeleccionada = selectTabla.value;
-    if (tablaSeleccionada) {
-        cargarTabla(tablaSeleccionada);
-    }
-});
 
 
 function generarTabla(encabezados, datos) {
@@ -272,8 +267,9 @@ async function buscarPorId() {
 
 // ------------------ EDITAR ------------------
 let datoEditando = null;
-let hojaActualEditar = null;
+
 let idActualEditar = null;
+
 const camposOcultos = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
 
 async function buscarPorIDEditar() {
