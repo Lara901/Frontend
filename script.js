@@ -219,9 +219,7 @@ async function guardarEdicion() {
   let datosEnviar = {};
 
   // 1️⃣ Obtener ID actual del formulario
-  const inputID = Array.from(inputs).find(inp => inp.name === "ID");
-  let idValor = inputID ? inputID.value.trim() : "";
-
+  let idValor = datosEnviar["ID"] || idActualEditar;
   // 2️⃣ Si no tiene ID, pedir uno nuevo al backend
   if (!idValor) {
     try {
@@ -232,7 +230,16 @@ async function guardarEdicion() {
       console.error("Error al obtener nuevo ID:", error);
     }
   }
-
+const labelID = document.createElement("label");
+labelID.textContent = "ID";
+const inputID = document.createElement("input");
+inputID.type = "text";
+inputID.name = "ID";
+inputID.value = datos["ID"] || "";
+inputID.readOnly = true;
+form.appendChild(labelID);
+form.appendChild(inputID);
+form.appendChild(document.createElement("br"));
   // 3️⃣ Construir objeto solo con campos permitidos
   camposPermitidos.forEach(campo => {
     const input = Array.from(inputs).find(inp => inp.name === campo);
