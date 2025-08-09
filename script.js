@@ -22,15 +22,16 @@ const camposPermitidos = [
   "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
   "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total", "Carnes", "Huevos", "Mercado de Plaza", "Pollo", "Quesos", "Supermercado", "Suma total", "Acueducto", "Claro", "Codensa", "Gas Natural", "Suma total","Intereses Cesantias", "Nomina Empleados", "Nomina Socios", "Parafiscales", "Suma total", "Participacion Costos"];
 function limpiarValorPeso(valor) {
-  if (typeof valor === 'string') {
-    // Quitar todo excepto números y coma (decimal)
-    let limpio = valor.replace(/[^0-9,]/g, '');
-    // Reemplazar la coma decimal por punto
-    limpio = limpio.replace(',', '.');
-    const numero = Number(limpio);
-    return isNaN(numero) ? 0 : numero;
-  }
-  return valor;
+  if (typeof valor === "number") return valor; // Si ya es número, no procesar
+  if (typeof valor !== "string") return 0;     // Si no es string o número, devolver 0
+  
+  // Elimina cualquier símbolo, espacio, puntos o comas que no sean parte de un decimal válido
+  valor = valor.replace(/[^0-9,.-]/g, ""); // Deja solo números, comas, puntos y signo
+  valor = valor.replace(/\./g, "");        // Quita separadores de miles
+  valor = valor.replace(",", ".");         // Convierte coma a punto decimal
+
+  const numero = parseFloat(valor);
+  return isNaN(numero) ? 0 : numero;
 }
   // ------------------ LOGIN ------------------
 
@@ -124,14 +125,16 @@ tabla.classList.add("tabla-datos");
       const celda = filaTabla.insertCell();
       let valor = fila[col];
 
-      if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
-  const valorNumerico = Number(valor);
-  valor = valorNumerico.toLocaleString("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0
-  });
-}
+      if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      const valorNumerico = limpiarValorPeso(valor);
+      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
+        valor = valorNumerico.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
+    }
 
       celda.textContent = valor;
     });
@@ -160,7 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
+function cargarTabla(hoja) {
+  mostrarDatos(hoja, "tablaDatos");
+}
 
 function generarTabla(encabezados, datos) {
   const tabla = document.getElementById("tablaDatos");
@@ -184,9 +189,16 @@ function generarTabla(encabezados, datos) {
       let valor = fila[columna] ?? ""; // Previene undefined
 
       // Si la columna está en la lista, formatear a pesos
-      if (columnasConFormatoPesos.includes(columna)) {
-        valor = formatearPesos(valor);
+      if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      const valorNumerico = limpiarValorPeso(valor);
+      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
+        valor = valorNumerico.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
       }
+    }
 
       td.textContent = valor;
     });
@@ -263,14 +275,16 @@ async function buscarPorId() {
     const celda = filaTabla.insertCell();
     let valor = datos[col];
 
-    if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
-  const valorNumerico = Number(valor);
-  valor = valorNumerico.toLocaleString("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0
-  });
-}
+    if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      const valorNumerico = limpiarValorPeso(valor);
+      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
+        valor = valorNumerico.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
+    }
 
     celda.textContent = valor;
   });
@@ -346,14 +360,16 @@ function generarFormularioEditar(datos, encabezados) {
     let valor = datos[campo] || "";
 
     // Formatear en pesos si está en la lista
-    if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
-  const valorNumerico = Number(valor);
-  valor = valorNumerico.toLocaleString("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0
-  });
-}
+    if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      const valorNumerico = limpiarValorPeso(valor);
+      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
+        valor = valorNumerico.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
+    }
 
     input.value = valor;
     if (campo === "ID") input.readOnly = true;
@@ -364,11 +380,7 @@ function generarFormularioEditar(datos, encabezados) {
   });
 }
 
-columnasConFormatoPesos.forEach(col => {
-  if (datosEnviar[col]) {
-    datosEnviar[col] = limpiarValorPeso(datosEnviar[col]);
-  }
-});
+
 
 async function guardarEdicion() {
   const form = document.getElementById("formularioEditar");
@@ -389,6 +401,12 @@ datosEnviar[campo] = valor;
     }
   });
 
+
+  columnasConFormatoPesos.forEach(col => {
+  if (datosEnviar[col]) {
+    datosEnviar[col] = limpiarValorPeso(datosEnviar[col]);
+  }
+});
   // Incluir ID en el envío
   datosEnviar["ID"] = idValor;
 
@@ -491,14 +509,16 @@ async function cargarFormulario() {
       input.required = true;
 
       // Si es una columna de formato pesos
-      if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
-  const valorNumerico = Number(valor);
-  valor = valorNumerico.toLocaleString("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0
-  });
-}
+      if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      const valorNumerico = limpiarValorPeso(valor);
+      if (!isNaN(valorNumerico) && valorNumerico !== 0) {
+        valor = valorNumerico.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
+    }
 
       form.appendChild(label);
       form.appendChild(input);
