@@ -369,8 +369,7 @@ async function cargarFormulario() {
       return;
     }
 
-    const columnasOcultas = [];
-
+    const columnasOcultas = ["ID"]; // 👈 Ocultamos el ID, será autogenerado
     const columnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col));
 
     columnas.forEach(col => {
@@ -378,8 +377,9 @@ async function cargarFormulario() {
       label.textContent = col;
       const input = document.createElement("input");
       input.name = col;
+      input.required = true;
 
-      // Si es una columna con formato pesos y el dato existe, mostrarlo formateado
+      // Si es una columna de formato pesos
       if (columnasConFormatoPesos.includes(col.trim()) && datos[0][col]) {
         const valorNumerico = Number(datos[0][col].toString().replace(/\./g, "").replace(",", "."));
         if (!isNaN(valorNumerico)) {
@@ -391,7 +391,6 @@ async function cargarFormulario() {
         }
       }
 
-      input.required = true;
       form.appendChild(label);
       form.appendChild(input);
       form.appendChild(document.createElement("br"));
@@ -402,43 +401,39 @@ async function cargarFormulario() {
   }
 }
 
-
 async function enviarFormulario() {
   const hoja = document.getElementById("hojaAgregar").value;
 
-  // Paso 1: Obtener el ID máximo existente
+  // 1️⃣ Calcular ID automáticamente
   let nuevoID = 1;
   try {
     const resDatos = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
     const datosExistentes = await resDatos.json();
-
     if (datosExistentes.length > 0) {
       const ids = datosExistentes.map(d => parseInt(d.ID, 10)).filter(n => !isNaN(n));
-      if (ids.length > 0) {
-        nuevoID = Math.max(...ids) + 1;
-      }
+      if (ids.length > 0) nuevoID = Math.max(...ids) + 1;
     }
   } catch (error) {
     console.error("Error obteniendo ID máximo:", error);
   }
 
-  // Paso 2: Construir datos a enviar (todos los campos dinámicos)
+  // 2️⃣ Construir objeto a enviar
   const form = document.getElementById("formAgregar");
   const inputs = form.querySelectorAll("input, select, textarea");
+  let datosEnviar = { ID: nuevoID }; // 👈 Siempre incluir el nuevo ID
 
-  let datosEnviar = { ID: nuevoID };
   inputs.forEach(input => {
     datosEnviar[input.name] = input.value;
   });
 
-  // Paso 3: Convertir a número los campos de formato pesos
+  // 3️⃣ Convertir campos de formato pesos a número
   columnasConFormatoPesos.forEach(col => {
     if (datosEnviar[col]) {
       datosEnviar[col] = Number(datosEnviar[col].toString().replace(/[^0-9,-]/g, "").replace(",", "."));
     }
   });
 
-  // Paso 4: Enviar datos al backend
+  // 4️⃣ Enviar datos al backend
   try {
     const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`, {
       method: "POST",
@@ -449,6 +444,10 @@ async function enviarFormulario() {
     const respuesta = document.getElementById("respuestaAgregar");
     if (res.ok) {
       respuesta.textContent = `Datos agregados correctamente. Nuevo ID: ${nuevoID}`;
+      // Recargar tabla para mostrar el nuevo ID
+      if (typeof cargarTabla === "function") {
+        cargarTabla(); 
+      }
     } else {
       respuesta.textContent = "Error al agregar datos.";
     }
