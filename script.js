@@ -21,12 +21,13 @@ const camposPermitidos = [
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evita que el formulario recargue la página
-    await login();      // Llama a la función login
-  });
+  if (loginForm) { // Solo si existe
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await login();
+    });
+  }
 });
-
 async function login() {
   const usuario = document.getElementById('usuario').value;
   const contraseña = document.getElementById('contraseña').value;
