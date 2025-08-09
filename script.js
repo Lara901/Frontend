@@ -96,12 +96,12 @@ async function mostrarDatos(hoja, contenedorId) {
   const columnasOculta = [];
 
   const columnasConFormatoPesos = [
-    "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
-    "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
-    "Septiembre", "Octubre", "Noviembre", "Diciembre",
-    "INGRESOS", "GASTOS", "DIFERENCIA",
-    "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
-    "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"
+   "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
+  "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+  "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "INGRESOS", "GASTOS", "DIFERENCIA",
+  "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
+  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total", "Carnes", "Huevos", "Mercado de Plaza", "Pollo", "Quesos", "Supermercado", "Suma total", "Acueducto", "Claro", "Codensa", "Gas Natural", "Suma total","Intereses Cesantias", "Nomina Empleados", "Nomina Socios", "Parafiscales", "Suma total", "Participacion Costos"
   ];
 
   const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOculta.includes(col.trim()));
