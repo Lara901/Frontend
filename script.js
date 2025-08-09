@@ -195,19 +195,15 @@ async function buscarPorIDEditar() {
   }
 
   try {
-    // Obtener columnas de la hoja
-    const columnasRes = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/columnas`);
-    const columnas = await columnasRes.json();
+    // 1️⃣ Obtener encabezados de la hoja
+    const resEnc = await fetch(`${backendURL}/encabezados/${encodeURIComponent(hoja)}`);
+    const encabezados = await resEnc.json();
 
-    // Definir qué campos se permiten (excluyendo los ocultos)
-    camposPermitidos = columnas.filter(campo => !camposOcultos.includes(campo));
-
-    // Obtener datos por ID
+    // 2️⃣ Buscar datos del ID
     const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`);
     const datos = await res.json();
 
     const pre = document.getElementById("datoActualEditar");
-
     if (!datos || Object.keys(datos).length === 0) {
       pre.textContent = "ID no encontrado.";
       return;
@@ -217,12 +213,6 @@ async function buscarPorIDEditar() {
     hojaActualEditar = hoja;
     idActualEditar = id;
 
-    generarFormularioEditar(datos);
-  } catch (error) {
-    console.error(error);
-    document.getElementById("datoActualEditar").textContent = "Error al buscar el ID.";
-  }
-}
 function generarFormularioEditar(datos) {
   const form = document.getElementById("formularioEditar");
   form.innerHTML = "";
@@ -264,6 +254,46 @@ function generarFormularioEditar(datos) {
     form.appendChild(input);
     form.appendChild(document.createElement("br"));
   });
+}const columnasOcultas = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
+
+function generarFormularioEditar(datos, encabezados) {
+  const form = document.getElementById("formularioEditar");
+  form.innerHTML = "";
+
+  encabezados.forEach(campo => {
+    if (columnasOcultas.includes(campo)) return; // No mostrar columnas ocultas
+
+    const label = document.createElement("label");
+    label.textContent = campo;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = campo;
+
+    let valor = datos[campo] || "";
+    if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
+      const valorNumerico = Number(valor.toString().replace(/\./g, "").replace(",", "."));
+      if (!isNaN(valorNumerico)) {
+        valor = valorNumerico.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0
+        });
+      }
+    }
+
+    input.value = valor;
+    if (campo === "ID") input.readOnly = true; // El ID no se edita
+
+    form.appendChild(label);
+    form.appendChild(input);
+    form.appendChild(document.createElement("br"));
+  });
+}
+} catch (error) {
+    console.error(error);
+    document.getElementById("datoActualEditar").textContent = "Error al buscar el ID.";
+  }
 }
 
 async function guardarEdicion() {
@@ -307,6 +337,7 @@ async function guardarEdicion() {
     document.getElementById("respuestaEditar").textContent = "Error al conectar con el servidor.";
   }
 }
+
 // ------------------ ELIMINAR ------------------
 
 async function buscarPorIDEliminar() {
