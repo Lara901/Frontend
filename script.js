@@ -321,7 +321,7 @@ function generarFormularioEditar(datos, encabezados) {
   form.innerHTML = "";
 
   encabezados.forEach(campo => {
-    if (columnasOcultos.includes(campo)) return; // Ocultar columnas específicas
+    if (camposOcultos.includes(campo)) return; // Ocultar columnas específicas
 
     const label = document.createElement("label");
     label.textContent = campo;
