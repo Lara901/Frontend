@@ -96,47 +96,51 @@ async function mostrarDatos(hoja, contenedorId) {
   const columnasOculta = [];
 
   const columnasConFormatoPesos = [
-  "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
-  "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
-  "Septiembre", "Octubre", "Noviembre", "Diciembre",
-  "INGRESOS", "GASTOS", "DIFERENCIA",
-  "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
-  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"
-];
+    "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
+    "Tarifa", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+    "Septiembre", "Octubre", "Noviembre", "Diciembre",
+    "INGRESOS", "GASTOS", "DIFERENCIA",
+    "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
+    "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total"
+  ];
 
- const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOculta.includes(col.trim()));
+  const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOculta.includes(col.trim()));
 
   const tabla = document.createElement("table");
-tabla.classList.add("tabla-datos");
+  tabla.classList.add("tabla-datos");
+
+  // Encabezado
   const thead = tabla.createTHead();
   const filaEncabezado = thead.insertRow();
-
   todasColumnas.forEach(col => {
     const th = document.createElement("th");
     th.textContent = col;
     filaEncabezado.appendChild(th);
   });
 
+  // Cuerpo
   const tbody = tabla.createTBody();
+  datos.forEach(fila => {
+    const filaTabla = tbody.insertRow();
+    todasColumnas.forEach(col => {
+      const celda = filaTabla.insertCell();
+      let valor = fila[col] ?? "";
 
-  encabezados.forEach(campo => {
-  let valor = fila[campo] ?? "";
+      // Formatear a pesos si corresponde
+      if (columnasConFormatoPesos.map(c => c.trim()).includes(col.trim())) {
+        let valorNumerico = Number(String(valor).replace(/\D/g, ""));
+        if (!isNaN(valorNumerico) && valorNumerico > 0) {
+          valor = valorNumerico.toLocaleString("es-CO", {
+            style: "currency",
+            currency: "COP",
+            minimumFractionDigits: 0
+          });
+        }
+      }
 
-  // Limpiar valor y verificar columna
-  if (columnasConFormatoPesos.map(c => c.trim()).includes(campo.trim())) {
-    let valorNumerico = Number(String(valor).replace(/\D/g, "")); // elimina todo lo que no sea número
-    if (!isNaN(valorNumerico) && valorNumerico > 0) {
-      valor = valorNumerico.toLocaleString("es-CO", {
-        style: "currency",
-        currency: "COP",
-        minimumFractionDigits: 0
-      });
-    }
-  }
-
-  // agregar a la celda
-  html += `<td>${valor}</td>`;
-});
+      celda.textContent = valor;
+    });
+  });
 
   contenedor.appendChild(tabla);
 }
