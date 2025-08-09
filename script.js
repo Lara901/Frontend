@@ -402,11 +402,12 @@ async function cargarFormulario() {
   }
 }
 
+
 async function enviarFormulario() {
   const hoja = document.getElementById("hojaAgregar").value;
 
   // Paso 1: Obtener el ID máximo existente
-  let nuevoID = 1; // Si no hay datos, empezará en 1
+  let nuevoID = 1;
   try {
     const resDatos = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
     const datosExistentes = await resDatos.json();
@@ -421,17 +422,23 @@ async function enviarFormulario() {
     console.error("Error obteniendo ID máximo:", error);
   }
 
-  // Paso 2: Construir datos a enviar
+  // Paso 2: Construir datos a enviar (todos los campos dinámicos)
   const form = document.getElementById("formAgregar");
   const inputs = form.querySelectorAll("input, select, textarea");
 
-  let datosEnviar = { ID: nuevoID }; // ← ID automático
-  camposPermitidos.forEach(campo => {
-    const input = Array.from(inputs).find(inp => inp.name === campo);
-    if (input) datosEnviar[campo] = input.value;
+  let datosEnviar = { ID: nuevoID };
+  inputs.forEach(input => {
+    datosEnviar[input.name] = input.value;
   });
 
-  // Paso 3: Enviar datos al backend
+  // Paso 3: Convertir a número los campos de formato pesos
+  columnasConFormatoPesos.forEach(col => {
+    if (datosEnviar[col]) {
+      datosEnviar[col] = Number(datosEnviar[col].toString().replace(/[^0-9,-]/g, "").replace(",", "."));
+    }
+  });
+
+  // Paso 4: Enviar datos al backend
   try {
     const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`, {
       method: "POST",
