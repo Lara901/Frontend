@@ -90,7 +90,7 @@ async function mostrarDatos(hoja, contenedorId) {
  const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col.trim()));
 
   const tabla = document.createElement("table");
-  tabla.classList.add("tabla-datos"); // ← fondo blanco y estilo
+tabla.classList.add("tabla-datos");
   const thead = tabla.createTHead();
   const filaEncabezado = thead.insertRow();
 
@@ -140,15 +140,15 @@ async function buscarPorId() {
   const datos = await res.json();
 
   const resultado = document.getElementById("resultadoBuscar");
-  resultado.innerHTML = JSON.stringify(datos, null, 2);
-}
-if (!datos || Object.keys(datos).length === 0) {
+  resultado.innerHTML = "";
+
+  if (!datos || Object.keys(datos).length === 0) {
     resultado.textContent = "No se encontró el ID.";
     return;
   }
 
   const tabla = document.createElement("table");
-  tabla.classList.add("tabla-datos"); // ← fondo blanco
+  tabla.classList.add("tabla-datos");
 
   const thead = tabla.createTHead();
   const filaEncabezado = thead.insertRow();
@@ -177,7 +177,7 @@ if (!datos || Object.keys(datos).length === 0) {
   });
 
   resultado.appendChild(tabla);
-
+}
 
 // ------------------ EDITAR ------------------
 let datoEditando = null;
