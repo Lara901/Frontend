@@ -131,6 +131,87 @@ function verDatos() {
   const hoja = document.getElementById("hojaSelect").value;
   mostrarDatos(hoja, "tablaDatos");
 }
+const selectTabla = document.getElementById('tablaSelect');
+const contenedorTabla = document.getElementById('contenedorTabla');
+
+selectTabla.addEventListener('change', () => {
+    const tablaSeleccionada = selectTabla.value;
+    if (tablaSeleccionada) {
+        cargarTabla(tablaSeleccionada);
+    }
+});
+
+function formatearPesos(valor) {
+  if (!valor || isNaN(valor)) return valor; // No formatear si no es número
+  return `$${Number(valor).toLocaleString('es-CO', { minimumFractionDigits: 0 })}`;
+}
+
+function generarTabla(encabezados, datos) {
+  const tabla = document.getElementById("tablaDatos");
+  tabla.innerHTML = ""; // Limpia tabla previa
+
+  // Crear encabezados
+  const thead = tabla.createTHead();
+  const filaEncabezados = thead.insertRow();
+  encabezados.forEach(encabezado => {
+    const th = document.createElement("th");
+    th.textContent = encabezado;
+    filaEncabezados.appendChild(th);
+  });
+
+  // Crear cuerpo de tabla
+  const tbody = tabla.createTBody();
+  datos.forEach(fila => {
+    const tr = tbody.insertRow();
+    encabezados.forEach(columna => {
+      const td = tr.insertCell();
+      let valor = fila[columna] ?? ""; // Previene undefined
+
+      // Si la columna está en la lista, formatear a pesos
+      if (columnasConFormatoPesos.includes(columna)) {
+        valor = formatearPesos(valor);
+      }
+
+      td.textContent = valor;
+    });
+  });
+}
+
+
+function renderizarTabla(encabezados, datos) {
+    // Limpiar tabla anterior
+    contenedorTabla.innerHTML = '';
+
+    // Crear tabla y encabezado
+    const table = document.createElement('table');
+    table.classList.add('tabla-dinamica');
+
+    const thead = document.createElement('thead');
+    const trHead = document.createElement('tr');
+    encabezados.forEach(col => {
+        const th = document.createElement('th');
+        th.textContent = col;
+        trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+
+    // Crear cuerpo de la tabla
+    const tbody = document.createElement('tbody');
+    datos.forEach(fila => {
+        const tr = document.createElement('tr');
+        encabezados.forEach(col => {
+            const td = document.createElement('td');
+            td.textContent = fila[col] !== undefined ? fila[col] : '';
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    contenedorTabla.appendChild(table);
+}
+
 
 // ------------------ BUSCAR POR ID ------------------
 
