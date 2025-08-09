@@ -141,10 +141,6 @@ selectTabla.addEventListener('change', () => {
     }
 });
 
-function formatearPesos(valor) {
-  if (!valor || isNaN(valor)) return valor; // No formatear si no es número
-  return `$${Number(valor).toLocaleString('es-CO', { minimumFractionDigits: 0 })}`;
-}
 
 function generarTabla(encabezados, datos) {
   const tabla = document.getElementById("tablaDatos");
