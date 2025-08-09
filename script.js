@@ -124,15 +124,13 @@ tabla.classList.add("tabla-datos");
       const celda = filaTabla.insertCell();
       let valor = fila[col];
 
-      if (columnasConFormatoPesos.includes(col.trim()) && typeof valor === "string" && valor.trim() !== "") {
-  const valorNumerico = Number(valor.replace(/\./g, "").replace(",", "."));
-  if (!isNaN(valorNumerico)) {
-    valor = valorNumerico.toLocaleString("es-CO", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 0
-    });
-  }
+      if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
+  const valorNumerico = Number(valor);
+  valor = valorNumerico.toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  });
 }
 
       celda.textContent = valor;
@@ -266,12 +264,13 @@ async function buscarPorId() {
     let valor = datos[col];
 
     if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
-      valor = Number(valor).toLocaleString("es-CO", {
-        style: "currency",
-        currency: "COP",
-        minimumFractionDigits: 0
-      });
-    }
+  const valorNumerico = Number(valor);
+  valor = valorNumerico.toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  });
+}
 
     celda.textContent = valor;
   });
@@ -347,16 +346,14 @@ function generarFormularioEditar(datos, encabezados) {
     let valor = datos[campo] || "";
 
     // Formatear en pesos si está en la lista
-    if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
-      const valorNumerico = Number(valor.toString().replace(/\./g, "").replace(",", "."));
-      if (!isNaN(valorNumerico)) {
-        valor = valorNumerico.toLocaleString("es-CO", {
-          style: "currency",
-          currency: "COP",
-          minimumFractionDigits: 0
-        });
-      }
-    }
+    if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
+  const valorNumerico = Number(valor);
+  valor = valorNumerico.toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  });
+}
 
     input.value = valor;
     if (campo === "ID") input.readOnly = true;
@@ -499,16 +496,14 @@ async function cargarFormulario() {
       input.required = true;
 
       // Si es una columna de formato pesos
-      if (columnasConFormatoPesos.includes(col.trim()) && datos[0][col]) {
-        const valorNumerico = Number(datos[0][col].toString().replace(/\./g, "").replace(",", "."));
-        if (!isNaN(valorNumerico)) {
-          input.value = valorNumerico.toLocaleString("es-CO", {
-            style: "currency",
-            currency: "COP",
-            minimumFractionDigits: 0
-          });
-        }
-      }
+      if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
+  const valorNumerico = Number(valor);
+  valor = valorNumerico.toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  });
+}
 
       form.appendChild(label);
       form.appendChild(input);
