@@ -196,7 +196,7 @@ async function buscarPorIDEditar() {
 
   try {
     // 1️⃣ Obtener encabezados de la hoja
-    const resEnc = await fetch(`${backendURL}/encabezados/${encodeURIComponent(hoja)}`);
+    const resEnc = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/columnas`);
     const encabezados = await resEnc.json();
 
     // 2️⃣ Buscar datos del ID
