@@ -18,7 +18,18 @@ const camposPermitidos = [
   "INGRESOS", "GASTOS", "DIFERENCIA",
   "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
   "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total", "Carnes", "Huevos", "Mercado de Plaza", "Pollo", "Quesos", "Supermercado", "Suma total", "Acueducto", "Claro", "Codensa", "Gas Natural", "Suma total","Intereses Cesantias", "Nomina Empleados", "Nomina Socios", "Parafiscales", "Suma total", "Participacion Costos"];
-// ------------------ LOGIN ------------------
+function limpiarValorPeso(valor) {
+  if (typeof valor === 'string') {
+    // Quitar todo excepto números y coma (decimal)
+    let limpio = valor.replace(/[^0-9,]/g, '');
+    // Reemplazar la coma decimal por punto
+    limpio = limpio.replace(',', '.');
+    const numero = Number(limpio);
+    return isNaN(numero) ? 0 : numero;
+  }
+  return valor;
+}
+  // ------------------ LOGIN ------------------
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
@@ -353,11 +364,18 @@ function generarFormularioEditar(datos, encabezados) {
   });
 }
 
+columnasConFormatoPesos.forEach(col => {
+  if (datosEnviar[col]) {
+    datosEnviar[col] = limpiarValorPeso(datosEnviar[col]);
+  }
+});
+
 async function guardarEdicion() {
   const form = document.getElementById("formularioEditar");
   const inputs = form.querySelectorAll("input, select, textarea");
 
   let datosEnviar = {};
+  
   
   // Obtener ID desde el formulario
   const idValor = Array.from(inputs).find(inp => inp.name === "ID")?.value;
@@ -367,13 +385,15 @@ async function guardarEdicion() {
     const input = Array.from(inputs).find(inp => inp.name === campo);
     if (input) {
       let valor = input.value.trim();
-      if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
-        valor = valor.replace(/\$/g, "").replace(/\./g, "").replace(",", ".");
-      }
-      datosEnviar[campo] = valor;
+datosEnviar[campo] = valor;
     }
   });
 
+  columnasConFormatoPesos.forEach(col => {
+  if (datosEnviar[col]) {
+    datosEnviar[col] = limpiarValorPeso(datosEnviar[col]);
+  }
+});
   // Incluir ID en el envío
   datosEnviar["ID"] = idValor;
 
