@@ -1,6 +1,5 @@
 const backendURL = "https://backend-login-01tj.onrender.com"; // ← Cambia esto por tu URL real
 let hojaActualEditar = null;
-const camposOcultos = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
 const camposPermitidos = [
   "Año",
   "Mes",
@@ -270,7 +269,7 @@ async function buscarPorId() {
 let datoEditando = null;
 let idActualEditar = null;
 
-
+const camposOcultos = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
 
 async function buscarPorIDEditar() {
   const hoja = document.getElementById("hojaEditar").value;
