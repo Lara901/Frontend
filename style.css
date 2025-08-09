@@ -1,3 +1,28 @@
+.tabla-resultados {
+  border-collapse: collapse;
+  background-color: white;
+  margin-top: 15px;
+  width: auto; /* Se ajusta al contenido */
+  max-width: 100%; /* No se sale del contenedor */
+}
+
+.tabla-resultados th,
+.tabla-resultados td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  white-space: nowrap; /* Evita que el texto se corte */
+}
+
+.tabla-resultados th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.tabla-contenedor {
+  overflow-x: auto; /* Scroll horizontal si se excede */
+}
+
+
 body {
    font-family: garamond, Cambria;
    background: linear-gradient(to right,#a5d6a7, #81c784);

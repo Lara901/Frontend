@@ -90,6 +90,7 @@ async function mostrarDatos(hoja, contenedorId) {
  const todasColumnas = Object.keys(datos[0]).filter(col => !columnasOcultas.includes(col.trim()));
 
   const tabla = document.createElement("table");
+  tabla.classList.add("tabla-datos"); // ← fondo blanco y estilo
   const thead = tabla.createTHead();
   const filaEncabezado = thead.insertRow();
 
@@ -141,6 +142,42 @@ async function buscarPorId() {
   const resultado = document.getElementById("resultadoBuscar");
   resultado.innerHTML = JSON.stringify(datos, null, 2);
 }
+if (!datos || Object.keys(datos).length === 0) {
+    resultado.textContent = "No se encontró el ID.";
+    return;
+  }
+
+  const tabla = document.createElement("table");
+  tabla.classList.add("tabla-datos"); // ← fondo blanco
+
+  const thead = tabla.createTHead();
+  const filaEncabezado = thead.insertRow();
+
+  Object.keys(datos).forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = col;
+    filaEncabezado.appendChild(th);
+  });
+
+  const tbody = tabla.createTBody();
+  const filaTabla = tbody.insertRow();
+  Object.keys(datos).forEach(col => {
+    const celda = filaTabla.insertCell();
+    let valor = datos[col];
+
+    if (columnasConFormatoPesos.includes(col.trim()) && valor !== "" && !isNaN(valor)) {
+      valor = Number(valor).toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 0
+      });
+    }
+
+    celda.textContent = valor;
+  });
+
+  resultado.appendChild(tabla);
+
 
 // ------------------ EDITAR ------------------
 let datoEditando = null;
