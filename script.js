@@ -183,7 +183,7 @@ async function buscarPorId() {
 let datoEditando = null;
 let hojaActualEditar = null;
 let idActualEditar = null;
-const camposOcultos = [];
+const camposOcultos = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
 
 async function buscarPorIDEditar() {
   const hoja = document.getElementById("hojaEditar").value;
@@ -195,6 +195,14 @@ async function buscarPorIDEditar() {
   }
 
   try {
+    // Obtener columnas de la hoja
+    const columnasRes = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/columnas`);
+    const columnas = await columnasRes.json();
+
+    // Definir qué campos se permiten (excluyendo los ocultos)
+    camposPermitidos = columnas.filter(campo => !camposOcultos.includes(campo));
+
+    // Obtener datos por ID
     const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`);
     const datos = await res.json();
 
@@ -209,15 +217,12 @@ async function buscarPorIDEditar() {
     hojaActualEditar = hoja;
     idActualEditar = id;
 
-    // Mostrar formulario solo con campos permitidos
     generarFormularioEditar(datos);
-
   } catch (error) {
     console.error(error);
     document.getElementById("datoActualEditar").textContent = "Error al buscar el ID.";
   }
 }
-
 function generarFormularioEditar(datos) {
   const form = document.getElementById("formularioEditar");
   form.innerHTML = "";
