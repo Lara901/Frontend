@@ -134,6 +134,20 @@ function verDatos() {
 const selectTabla = document.getElementById('tablaSelect');
 const contenedorTabla = document.getElementById('contenedorTabla');
 
+document.addEventListener("DOMContentLoaded", () => {
+  const selectTabla = document.getElementById("hojaEditar"); // o el selector que uses
+  if (selectTabla) {
+    selectTabla.addEventListener('change', () => {
+      const tablaSeleccionada = selectTabla.value;
+      if (tablaSeleccionada) {
+        cargarTabla(tablaSeleccionada);
+      }
+    });
+  } else {
+    console.warn("No se encontró el select con id 'selectTabla'");
+  }
+});
+
 selectTabla.addEventListener('change', () => {
     const tablaSeleccionada = selectTabla.value;
     if (tablaSeleccionada) {
