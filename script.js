@@ -389,11 +389,6 @@ datosEnviar[campo] = valor;
     }
   });
 
-  columnasConFormatoPesos.forEach(col => {
-  if (datosEnviar[col]) {
-    datosEnviar[col] = limpiarValorPeso(datosEnviar[col]);
-  }
-});
   // Incluir ID en el envío
   datosEnviar["ID"] = idValor;
 
