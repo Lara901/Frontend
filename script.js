@@ -9,7 +9,10 @@ const camposPermitidos = [
   "Sub Concepto",
   "Detalle",
   "Créditos",
-  "Débitos"
+  "Débitos",
+  "STATUS", "Fecha de pago", "Tarifa", "Paciente", "Acudiente", "Cedula", "Contacto", "Fecha De Ingreso", "Fecha de Egreso", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+  "Septiembre", "Octubre", "Noviembre", "Diciembre", "MES", "INGRESOS", "GASTOS", "DIFERENCIA", "Alimentos", "Bancos", "Gastos Adminitativos", "Gastos de Infraestructura",
+  "Gastos de Operación", "Nomina", "Servicios Publicos", "Suma total", "Carnes", "Huevos", "Mercado de Plaza", "Pollo", "Quesos", "Supermercado", "Suma total", "Acueducto", "Claro", "Codensa", "Gas Natural", "Suma total", "Intereses Cesantias", "Nomina Empleados", "Nomina Socios", "Parafiscales", "Suma total", "Participacion Costos", "Concepto", "Porcentaje"];
 ];
   const columnasConFormatoPesos = [
   "Créditos limpios", "Débitos limpios", "Total créditos", "Total débitos", "Total neto",
