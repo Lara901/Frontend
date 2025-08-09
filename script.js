@@ -63,61 +63,10 @@ function verificarAcceso() {
 }
 
 // ------------------ MOSTRAR DATOS ------------------
-function mostrarTabla(datos) {
-  const contenedor = document.getElementById("resultadoBusqueda");
-  contenedor.innerHTML = "";
-
-  // Si no es array, lo convertimos en array
-  if (!Array.isArray(datos)) {
-    datos = [datos];
-  }
-
-  if (datos.length === 0) {
-    contenedor.innerHTML = "<p>No se encontraron datos.</p>";
-    return;
-  }
-
-  // Contenedor con scroll horizontal
-  const wrapper = document.createElement("div");
-  wrapper.classList.add("tabla-contenedor");
-
-  // Crear tabla
-  const tabla = document.createElement("table");
-  tabla.classList.add("tabla-resultados");
-
-  // Encabezados
-  const thead = document.createElement("thead");
-  const filaEncabezado = document.createElement("tr");
-  Object.keys(datos[0]).forEach(key => {
-    const th = document.createElement("th");
-    th.textContent = key;
-    filaEncabezado.appendChild(th);
-  });
-  thead.appendChild(filaEncabezado);
-  tabla.appendChild(thead);
-
-  // Cuerpo de la tabla
-  const tbody = document.createElement("tbody");
-  datos.forEach(fila => {
-    const tr = document.createElement("tr");
-    Object.values(fila).forEach(valor => {
-      const td = document.createElement("td");
-      td.textContent = valor;
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-  tabla.appendChild(tbody);
-
-  // Agregar todo al contenedor
-  wrapper.appendChild(tabla);
-  contenedor.appendChild(wrapper);
-}
 
 async function mostrarDatos(hoja, contenedorId) {
   const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}`);
-  const data = await res.json();
-mostrarTabla(data);
+  const datos = await res.json();
 
   const contenedor = document.getElementById(contenedorId);
   contenedor.innerHTML = "";
@@ -182,15 +131,13 @@ function verDatos() {
   mostrarDatos(hoja, "tablaDatos");
 }
 
-
 // ------------------ BUSCAR POR ID ------------------
 
 async function buscarPorId() {
   const hoja = document.getElementById("hojaBuscar").value;
   const id = document.getElementById("idBuscar").value;
   const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`);
-  const data = await res.json();
-mostrarTabla(data);
+  const datos = await res.json();
 
   const resultado = document.getElementById("resultadoBuscar");
   resultado.innerHTML = "";
