@@ -275,7 +275,16 @@ async function buscarPorIDEditar() {
   try {
     // 1️⃣ Obtener encabezados de la hoja
     const resEnc = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/columnas`);
-    const encabezados = await resEnc.json();
+    let encabezados = await resEnc.json();
+
+    // Si el backend devuelve { columnas: [...] }
+    if (encabezados && encabezados.columnas) {
+      encabezados = encabezados.columnas;
+    }
+
+    if (!Array.isArray(encabezados)) {
+      throw new Error("Encabezados inválidos recibidos del servidor");
+    }
 
     // 2️⃣ Buscar datos del ID
     const res = await fetch(`${backendURL}/hoja/${encodeURIComponent(hoja)}/${id}`);
@@ -290,21 +299,21 @@ async function buscarPorIDEditar() {
     pre.textContent = JSON.stringify(datos, null, 2);
     hojaActualEditar = hoja;
     idActualEditar = id;
+
     generarFormularioEditar(datos, encabezados);
-    } catch (error) {
-    console.error(error);
+
+  } catch (error) {
+    console.error("Error en buscarPorIDEditar:", error);
     document.getElementById("datoActualEditar").textContent = "Error al buscar el ID.";
   }
 }
-
-const columnasOcultas = ["Créditos limpios", "Débitos limpios", "Total Créditos", "Total Débitos", "Total Neto"];
 
 function generarFormularioEditar(datos, encabezados) {
   const form = document.getElementById("formularioEditar");
   form.innerHTML = "";
 
   encabezados.forEach(campo => {
-    if (columnasOcultas.includes(campo)) return; // No mostrar columnas ocultas
+    if (columnasOcultas.includes(campo)) return; // Ocultar columnas específicas
 
     const label = document.createElement("label");
     label.textContent = campo;
@@ -314,6 +323,8 @@ function generarFormularioEditar(datos, encabezados) {
     input.name = campo;
 
     let valor = datos[campo] || "";
+
+    // Formatear en pesos si está en la lista
     if (columnasConFormatoPesos.includes(campo.trim()) && valor !== "") {
       const valorNumerico = Number(valor.toString().replace(/\./g, "").replace(",", "."));
       if (!isNaN(valorNumerico)) {
@@ -326,7 +337,7 @@ function generarFormularioEditar(datos, encabezados) {
     }
 
     input.value = valor;
-    if (campo === "ID") input.readOnly = true; // El ID no se edita
+    if (campo === "ID") input.readOnly = true;
 
     form.appendChild(label);
     form.appendChild(input);
